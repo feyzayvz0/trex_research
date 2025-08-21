@@ -482,7 +482,7 @@ public async Task GetDataAsync()
 - **Lambda ifadesi** olarak da bilinir.  
 - Kısa ve okunabilir fonksiyon yazmak için kullanılır.  
 
----
+
 
 ##  Örnekler
 
@@ -642,6 +642,7 @@ Sonunda await ile indirme tamamlanıyor.
 **Senkron:** Her şey sırayla → İndirme bitmeden başka iş olmaz.
 **Asenkron:** İşler aynı anda yürüyormuş gibi → İndirme devam ederken başka işler yapılabilir.
 
+---
 
 ## 3. Backend Geliştirme Temelleri
 
@@ -976,9 +977,503 @@ Kullanıcı uygulamadan siparişini görüntüler, backend de bu JSON verisini d
 | **Öğrenme kolaylığı** | Kolay                      | Zor                      | Orta                                  |
 | **Performans**   | Genelde iyi                 | Ağır                     | Daha hızlı (fazla veri gelmez)        |
 
-
+---
 
 ## 4. ASP.NET
+
+### ASP.NET ve ASP.NET Core
+
+### ASP.NET Nedir?
+- Microsoft tarafından geliştirilen web uygulama geliştirme teknolojisidir.  
+- İlk kez **.NET Framework** ile birlikte çıktı (2002).  
+- Genelde **Windows** işletim sistemi üzerinde çalışır.  
+- **Web Forms, MVC, Web API** gibi farklı geliştirme modellerini destekler.  
+
+###  ASP.NET Core Nedir?
+- ASP.NET’in modern, yeniden yazılmış sürümüdür (**2016’da çıktı**).  
+- **Platform bağımsızdır** → Windows, Linux, macOS üzerinde çalışır.  
+- Daha **hafif, hızlı** ve **bulut uyumlu** olacak şekilde tasarlanmıştır.  
+- **Açık kaynaklıdır**, GitHub üzerinde sürekli geliştirilmektedir.  
+
+###  Avantajlar
+####  ASP.NET
+- Windows ve IIS ile güçlü entegrasyon  
+- Uzun süredir kullanılan, köklü teknoloji  
+- .NET Framework ekosistemiyle uyumlu  
+
+####  ASP.NET Core
+- **Platform bağımsız** (Windows, Linux, macOS)  
+- Daha **yüksek performans**  
+- **Mikroservis, bulut, container (Docker/Kubernetes)** desteği  
+- **Açık kaynak** → sürekli güncel kalıyor  
+
+
+###  ASP.NET ve ASP.NET Core Farkları
+
+| Özellik        | ASP.NET (Framework)         | ASP.NET Core                  |
+|----------------|-----------------------------|--------------------------------|
+| **Çıkış Yılı** | 2002                        | 2016                          |
+| **Çalışma Ortamı** | Sadece **Windows**        | **Windows, Linux, macOS**     |
+| **Performans** | Daha **ağır**               | Daha **hafif ve hızlı**       |
+| **Açık Kaynak** | ❌ Hayır                   | ✅ Evet                       |
+| **Modern Kullanım** | Az (eski projelerde var) | Çok (yeni projelerde tercih ediliyor) |
+
+ **Benim Yorumum:**  
+ASP.NET bana **“eski ama sağlam bir araba” 🚗** gibi geliyor,  
+ASP.NET Core ise **“yeni nesil elektrikli araba” ⚡** gibi → daha hızlı, esnek ve geleceğe uygun.
+
+##  MVC Nedir, Ne İçin Kullanılır?
+
+###  MVC Nedir?
+**MVC (Model – View – Controller)** yazılım geliştirmede kullanılan bir **mimari desen**dir.  
+Uygulamayı **3 farklı katmana** ayırır:
+
+- **Model** → Veriler ve iş mantığı  
+  *(ör. veritabanındaki ürün bilgileri)*  
+- **View** → Kullanıcıya görünen arayüz  
+  *(ör. ürünleri listeleyen sayfa)*  
+- **Controller** → Kullanıcıdan gelen istekleri alır, uygun modeli çağırır, sonucu doğru görünüme gönderir  
+
+
+###  Neden Kullanılır?
+- ✅ Kodun **düzenli** olmasını sağlar (her şey tek yerde değil, parçalı yapı).  
+- ✅ **Bakım** ve geliştirme kolaydır (sadece ilgili katmanı değiştirirsin).  
+- ✅ **Ekip çalışmasına** uygundur (Frontend geliştirici → View, Backend geliştirici → Controller/Model).  
+- ✅ **Tekrar kullanılabilir** kod yazmayı kolaylaştırır.  
+
+
+###  Küçük Bir Örnek
+Bir **alışveriş sitesi** için:
+
+- **Model** → `Product` tablosu → *ürün adı, fiyatı, stok bilgisi*  
+- **View** → “Ürünler” sayfasında listelenen ürünler  
+- **Controller** → Kullanıcı “Ürünleri Görüntüle” dediğinde veritabanından ürünleri alır ve sayfaya gönderir  
+
+
+ **Kısaca:**  
+**MVC = Düzen + Ayrım + Kolay geliştirme**  
+
+ Benim için MVC, *“her şeyi yerli yerine koyan bir dolap düzeni”* gibi.  
+Dağınık değil, aradığını kolay buluyorsun.
+
+```mermaid
+flowchart LR
+    User --> Controller
+    Controller --> Model
+    Model --> Controller
+    Controller --> View
+    View --> User
+```
+##  Middleware Nedir, Nasıl Çalışır?
+
+###  Middleware Nedir?
+**Middleware**, ASP.NET Core uygulamalarında **istek (request)** ile **yanıt (response)** arasına giren yazılım parçalarıdır.  
+Bir web uygulamasına gelen her istek, bir **middleware zincirinden (pipeline)** geçer.
+
+Her middleware iki şey yapabilir:
+1.  **Kendi görevini yerine getirmek** (ör: log tutmak, güvenlik kontrolü yapmak).  
+2.  **Sonraki middleware’e aktarmak**.  
+
+
+###  Çalışma Mantığı
+1.  **İstemciden bir HTTP isteği gelir.**  
+2.  İstek **pipeline (boru hattı)** boyunca middleware’lerden geçer.  
+3.  Her middleware işlemini yapar → sonra isteği sıradaki middleware’e gönderir.  
+4.  En son **response (yanıt)** üretilir ve aynı zincir üzerinden geri döner.  
+
+
+
+###  Basit Bir Örnek
+ASP.NET Core `Startup.cs` içinde middleware tanımlama:
+
+```csharp
+public void Configure(IApplicationBuilder app)
+{
+    app.Use(async (context, next) =>
+    {
+        Console.WriteLine("👉 İstek geldi");
+        await next(); // bir sonraki middleware’e aktar
+        Console.WriteLine("👈 Yanıt döndü");
+    });
+
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("Merhaba Middleware!");
+    });
+}
+```
+➡ Bu örnekte:
+- İlk middleware isteği yakalar, log yazar.
+- **next()** ile diğer middleware’e yollar.
+- Son middleware yanıtı üretir.
+- Ardından zincir geri dönüp log yazmaya devam eder.
+
+➡ Benim Yorumum:
+- Middleware bana “güvenlik kapılarından geçip ofise ulaşmak” gibi geliyor.
+- Her kapı (middleware) kontrol yapıyor → en sonunda içeri (response) ulaşıyorsun.
+
+  
+## Middleware Örneği
+
+```csharp
+public void Configure(IApplicationBuilder app)
+{
+    // 1️⃣ İlk middleware → Request console'a yazdırılır
+    app.Use(async (context, next) =>
+    {
+        Console.WriteLine("İstek alındı: " + context.Request.Path);
+        await next(); // isteği sonraki middleware'e gönder
+    });
+
+    // 2️⃣ Son middleware → Yanıt döner
+    app.Run(async context =>
+    {
+        await context.Response.WriteAsync("Merhaba Dünya!");
+    });
+}
+```
+##### Açıklama
+
+İlk middleware: Gelen HTTP isteğini yakalayıp konsola logluyor.
+next() çağrısı ile kontrolü bir sonraki middleware’e aktarıyor.
+İkinci middleware: Kullanıcıya "Merhaba Dünya!" cevabını döndürüyor.
+
+##### Kısaca
+
+Middleware = İstek–Yanıt yolundaki kontrol noktalarıdır.
+
+Bu kontrol noktalarında şu işler yapılabilir:
+✅ Loglama
+✅ Kimlik doğrulama (Authentication)
+✅ Hata yönetimi (Exception Handling)
+✅ Yetkilendirme (Authorization)
+✅ Caching, Routing, Response formatting...
+
+ Yani middleware zinciri, aslında istek ile yanıt arasındaki ince filtreler gibidir.
+Her istek bu filtrelerden geçer, her filtre isterse:
+- Kendi işini yapar
+- Ya da isteği bir sonrakine paslar.
+
+  
+## Dependency Injection (DI) Nedir, Neden Önemlidir?
+
+###  DI Nedir?
+**Dependency Injection (DI)**, bir sınıfın ihtiyaç duyduğu nesneleri kendi içinde **oluşturmak** yerine **dışarıdan almasıdır**.  
+Yani `new` anahtar kelimesi ile bağımlılık yaratmak yerine, ihtiyacımız olan nesneyi dışarıdan **enjekte ederiz**.
+
+
+
+###  Neden Önemlidir?
+
+-  **Bağımlılıkları azaltır** → Sınıflar birbirine sıkı sıkıya bağlı olmaz.  
+-  **Test etmeyi kolaylaştırır** → Mock/Fake nesneler enjekte edilerek kolayca test yapılabilir.  
+-  **Esneklik sağlar** → İstediğimiz yerde farklı implementasyonları kullanabiliriz.  
+-  **Bakımı kolaydır** → Kod daha temiz, modüler ve anlaşılır olur.  
+
+
+###  Küçük Bir Örnek (C#)
+
+**Kötü Kullanım (Bağımlılık içeride oluşturuluyor):**
+```csharp
+public class OrderService
+{
+    private SqlRepository _repo = new SqlRepository(); // new ile bağımlılık
+
+    public void CreateOrder(string product)
+    {
+        _repo.Save(product);
+    }
+}
+```
+- Burada ProductService, ProductRepository’e sıkı sıkıya bağlı.
+- Başka bir repository kullanmak istesek kodu değiştirmemiz gerekir.
+
+  
+**Doğru Kullanım (DI ile dışarıdan veriliyor)**
+
+```csharp
+public class OrderService
+{
+    private readonly IRepository _repo;
+
+    public OrderService(IRepository repo) // dışarıdan enjekte ediliyor
+    {
+        _repo = repo;
+    }
+
+    public void CreateOrder(string product)
+    {
+        _repo.Save(product);
+    }
+}
+```
+#### ASP.NET Core’da bu bağımlılıkları DI Container’a ekleriz:
+
+- services.AddScoped<IProductRepository, ProductRepository>();
+- services.AddScoped<ProductService>();
+
+#### Kısaca
+- DI = bağımlılıkları dışarıdan almak
+- Daha esnek, test edilebilir ve bakımı kolay bir yapı sağlar
+
+  ---
+
+## Katmanlı Mimari (Layered Architecture)
+
+Katmanlı mimari, uygulamayı **katmanlara ayırarak** geliştirme yapmamızı sağlar.  
+Böylece kod **daha düzenli, bakımı kolay ve test edilebilir** olur.
+
+
+
+### 1️ Presentation Layer (Sunum Katmanı)
+- Kullanıcı ile etkileşimin olduğu katmandır.  
+- **Örn:** ASP.NET MVC Controller, Razor Pages, WinForms, Blazor UI  
+- Görevi sadece **görüntülemek ve kullanıcıdan veri almak**.  
+-  İş mantığı burada yazılmaz!  
+
+
+
+### 2️ Business Layer (İş Katmanı)
+- İş kurallarının yazıldığı katmandır.  
+- **Örn:** “Bir hayvan 10 yaşına gelince ölür.” gibi kurallar burada olur.  
+- **Service** sınıfları bu katmanda yer alır.  
+- Presentation’dan gelen istekleri alır ve **Data Access Layer** ile konuşur.  
+
+
+
+### 3️ Data Access Layer (Veri Erişim Katmanı)
+- Veritabanı ile etkileşimi sağlar.  
+- **Örn:** Entity Framework, ADO.NET, Dapper  
+- Burada sadece **CRUD (Create, Read, Update, Delete)** işlemleri yapılır.  
+- Genelde **Repository Pattern** burada uygulanır.  
+
+
+
+ **Kısaca:**  
+Katmanlı mimari = **Düzen + Ayrım + Bakım kolaylığı**.  
+Her katman kendi işini yapar → Kod karışmaz, geliştirmek kolaylaşır.  
+
+
+
+## Service & Repository Pattern
+
+### Repository Pattern
+Veritabanı işlemlerini soyutlamak için kullanılır.
+
+Yani DbContext ya da SQL kodlarını Presentation veya Business katmanına taşımayız.
+
+Örn: `IProductRepository` → `Add()`, `GetAll()`, `Delete()` metotları
+
+
+```csharp
+public interface IProductRepository
+{
+    void Add(Product product);
+    IEnumerable<Product> GetAll();
+}
+
+public class ProductRepository : IProductRepository
+{
+    private readonly AppDbContext _context;
+    public ProductRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public void Add(Product product)
+    {
+        _context.Products.Add(product);
+        _context.SaveChanges();
+    }
+
+    public IEnumerable<Product> GetAll()
+    {
+        return _context.Products.ToList();
+    }
+}
+```
+### Service Pattern
+
+İş kurallarını barındırır.
+
+Repository’den aldığı veriler üzerinde kurallar uygular.
+
+```csharp
+public class ProductService
+{
+    private readonly IProductRepository _repository;
+
+    public ProductService(IProductRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public void CreateProduct(string name, decimal price)
+    {
+        if (price <= 0)
+            throw new Exception("Fiyat 0 veya negatif olamaz!");
+
+        var product = new Product { Name = name, Price = price };
+        _repository.Add(product);
+    }
+}
+```
+### Katmanların Birlikte Çalışması
+
+```mermaid
+flowchart TD
+    User[" Kullanıcı"] --> Presentation[" Presentation Layer"]
+    Presentation --> Service[" Business Layer (Service)"]
+    Service --> Repository[" Data Access Layer (Repository)"]
+    Repository --> Database[" Database"]
+
+```
+
+   ### Kısaca
+
+- **Presentation** → Sadece kullanıcı ile iletişim kurar.  
+- **Business (Service)** → İş kuralları burada.  
+- **Data Access (Repository)** → Veritabanı işlemleri burada.  
+
+ Benim için katmanlı mimari, bir restoran mutfağı gibi :  
+- **Garson (Presentation)** sipariş alır.  
+- **Aşçı (Business)** yemeği hazırlar.  
+- **Malzeme sorumlusu (Data Access)** depodan ürünleri getirir.
+  
+---
+
+  ## Clean Architecture
+
+**Clean Architecture**, yazılım projelerinde bağımlılıkları doğru yönetmek için kullanılan bir mimaridir.  
+
+**Amaç:**
+- Esnek (kolay değiştirilebilir)  
+- Test edilebilir  
+- Uzun ömürlü yazılım geliştirmek  
+
+Temel fikir şu: İş kuralları (**domain**) en merkezde olur ve dış katmanlara bağımlı olmaz.  
+Bağımlılıklar dıştan içe değil, **dıştan içe akar**.  
+
+
+
+## Katmanlar
+
+### 1️ Domain Layer (Merkez – Kalp)
+- Uygulamanın en önemli kısmı → iş kuralları burada.  
+- Entity’ler, Value Object’ler, kurallar, interface’ler bulunur.  
+- Hiçbir şeye bağımlı değildir (veritabanı, UI, framework).  
+
+### 2️ Application Layer
+- Domain ile dış dünya arasındaki köprü.  
+- Use Case’ler burada yazılır.  
+- Örn: “Sipariş oluşturma”, “Para transferi yapma” gibi senaryolar.  
+- Repository ve Service interface’lerini çağırır ama onların implementasyonunu bilmez.  
+
+### 3️ Infrastructure Layer
+- Uygulamanın teknik detayları burada olur:  
+  - Entity Framework / Dapper  
+  - Mail servisleri  
+  - Dosya sistemi  
+- Application/Domain’de tanımlanan interface’lerin gerçek implementasyonu burada yapılır.  
+
+### 4️ API (Presentation Layer)
+- Kullanıcıyla etkileşim kuran katman.  
+- Örn: ASP.NET Core Web API Controller.  
+- Sadece Application katmanındaki Use Case’leri çağırır.  
+
+
+
+## Bağımlılıkların Dışa Akması İlkesi
+
+Clean Architecture’ın en önemli kuralı:  
+➡ **Merkezdeki katmanlar dıştaki katmanlara bağımlı olamaz.**  
+➡ Ama dıştaki katmanlar içtekilere bağımlıdır.  
+
+Yani:  
+- **Domain** → hiçbir katmana bağımlı değil  
+- **Application** → sadece Domain’e bağımlı  
+- **Infrastructure & API** → Application ve Domain’e bağımlı
+  
+```mermaid
+flowchart TD
+    Domain[ Domain Layer] <--> Application[ Application Layer]
+    Application --> Infrastructure[ Infrastructure Layer]
+    Application --> API[ API Layer]
+    Infrastructure --> Database[( Database)]
+    API --> User[ Kullanıcı]
+```
+    
+### Küçük Örnek
+
+- **Domain:** `Order` entity → “sipariş tutarı 0’dan küçük olamaz” kuralı  
+- **Application:** `CreateOrderHandler` → sipariş oluşturma use case’i  
+- **Infrastructure:** `OrderRepository` → EF Core ile veritabanına kaydeder  
+- **API:** `OrderController` → HTTP POST isteğini alır, Application’a yollar  
+
+
+#### Benim Yorumum
+- Clean Architecture bana **soğan katmanlarını ** hatırlatıyor.  
+- En içte özü (**iş kuralları**) koruyoruz.  
+- Dış katmanlar (UI, DB, Framework) değişse bile içteki kurallar bozulmuyor.  
+
+## Middleware Sıralaması (Startup.cs / Program.cs)
+
+ASP.NET Core’da gelen her istek, tanımladığımız **middleware zincirinden sırayla geçer**.  
+Bu yüzden **middleware’lerin sırası çok önemlidir**.  
+Yanlış yerde tanımlarsak uygulama beklediğimiz gibi çalışmaz.
+
+```csharp
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+// 1️⃣ Hata yakalama
+app.UseExceptionHandler("/Home/Error");
+
+// 2️⃣ HTTPS yönlendirmesi
+app.UseHttpsRedirection();
+
+// 3️⃣ Statik dosyalar (wwwroot)
+app.UseStaticFiles();
+
+// 4️⃣ Routing (yönlendirme için temel ayar)
+app.UseRouting();
+
+// 5️⃣ Authentication → Kimlik doğrulama
+app.UseAuthentication();
+
+// 6️⃣ Authorization → Yetkilendirme
+app.UseAuthorization();
+
+// 7️⃣ Endpoint (Controller action’ları çalışır)
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();
+```
+## Sıralamanın Mantığı
+
+- **ExceptionHandler** → En başta olmalı ki diğerlerinde hata olursa yakalayabilsin.  
+- **HttpsRedirection** → İstek daha baştan HTTPS’e yönlendirilmeli.  
+- **StaticFiles** → Kullanıcı resim, CSS, JS gibi dosyalara direkt erişebilmeli.  
+- **Routing** → Controller/action’ların hangi isteğe karşılık geleceğini belirler.  
+- **Authentication → Authorization** → Önce kim olduğunu öğren (login), sonra yetkisi var mı diye kontrol et.  
+- **Endpoints** → En sonda, çünkü artık tüm hazırlıklar tamam → isteği ilgili Controller’a gönder.  
+
+
+
+## Kısaca Benim Yorumum
+
+Middleware sırası bana **havaalanı güvenlik sürecini** hatırlatıyor :  
+
+1. X-ray’den geç (**ExceptionHandler = kontrol noktası**)  
+2. Pasaportun kontrol edilir (**Authentication**)  
+3. Boarding pass kontrolü (**Authorization**)  
+4. Uçağa binersin (**Endpoint**)  
+
+➡ Yanlış sırada olsa, yolculuk bozulur.
+
+
 ## 5. Veritabanı ve ORM
 ## 6. Güvenlik ve Performans
 ## 7. Logging ve Hata Yönetimi
