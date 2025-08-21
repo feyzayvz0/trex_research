@@ -477,7 +477,7 @@ public async Task GetDataAsync()
 - **await** ifadesi sayesinde veri indirilirken uygulama akışı donmaz.
 - Kullanıcı arayüzü akıcı kalır, başka işlemler devam edebilir.
 
-# Arrow Function (=>) C#’ta
+### Arrow Function (=>) C#’ta
 
 - **Lambda ifadesi** olarak da bilinir.  
 - Kısa ve okunabilir fonksiyon yazmak için kullanılır.  
@@ -644,6 +644,340 @@ Sonunda await ile indirme tamamlanıyor.
 
 
 ## 3. Backend Geliştirme Temelleri
+
+##  Backend Nedir?
+- **Backend**, bir uygulamanın **arka planda çalışan kısmıdır**.  
+- Kullanıcıların görmediği ama uygulamanın **asıl işlerini yapan taraftır**.  
+- **Veritabanı işlemleri**, **kimlik doğrulama**, **iş mantığı (business logic)** burada gerçekleşir.  
+
+ **Örnek:** Bir e-ticaret sitesinde ürün arama, sipariş oluşturma, ödeme alma işlemleri **backend** tarafından yapılır.  
+
+
+
+## Frontend Nedir?
+- **Frontend**, bir uygulamanın **kullanıcının gördüğü ve etkileşim kurduğu kısmıdır**.  
+- Kullanıcı arayüzü (**UI**) tasarımı, butonlar, formlar, görseller bu tarafta bulunur.  
+- **HTML, CSS, JavaScript** gibi teknolojilerle geliştirilir.  
+
+ **Örnek:** E-ticaret sitesindeki ürün listesi, alışveriş sepeti ekranı, ödeme formu **frontend** kısmıdır.  
+
+
+## Backend ve Frontend Farkları
+
+| **Özellik**   | **Frontend (Kullanıcı Yüzü)**        | **Backend (Sunucu Tarafı)**          |
+|---------------|---------------------------------------|---------------------------------------|
+| **Görünürlük** | Kullanıcı tarafından görülür          | Kullanıcı görmez                      |
+| **Teknolojiler** | HTML, CSS, JS, React, Angular        | C#, Java, Python, SQL                 |
+| **Görev**     | Görselliği ve etkileşimi sağlar       | İş mantığı ve veri yönetimi           |
+| **Örnek**     | Ürün kartı, buton, form               | Sepet hesaplama, ödeme işleme         |
+| **Çalışma Yeri** | Tarayıcı / mobil uygulama            | Sunucu / veritabanı                   |
+
+
+
+##  Basit Örnek Senaryo
+- Bir kullanıcı web sitesinde **“Giriş Yap”** butonuna tıklar.  
+- **Frontend:** Butona basıldığında form verilerini (**e-posta + şifre**) toplar.  
+- **Backend:** Gelen verileri kontrol eder, doğruysa kullanıcıyı veritabanından doğrular ve giriş yapmasını sağlar.  
+
+
+
+## Web Sunucusu ve API
+###  Web Sunucusu Nedir?
+
+**Tanım:**  
+Web sunucusu, internet üzerinden gelen istekleri (**HTTP/HTTPS**) karşılayan ve istemcilere (tarayıcı, mobil uygulama vb.) cevap dönen bir yazılımdır.  
+
+### Görevleri
+- İstemciden gelen isteği alır (örn: `/index.html`).  
+- İlgili içeriği bulur veya **backend**’e yönlendirir.  
+- Cevabı istemciye geri gönderir.  
+
+### Örnek Web Sunucuları
+- **IIS (Internet Information Services):** Microsoft’un web sunucusu  
+- **Apache HTTP Server:** En çok kullanılan açık kaynak sunucu  
+- **Nginx:** Hafif ve performanslı sunucu  
+- **Kestrel:** .NET Core projelerinde varsayılan sunucu  
+
+ **Basitçe:** Web sunucusu, **istemci (frontend)** ile **uygulama (backend)** arasındaki **köprüdür**.  
+
+
+###  API Nedir?
+
+**Tanım:**  
+**API (Application Programming Interface)**, yazılımların birbirleriyle iletişim kurmasını sağlayan **arayüzdür**.  
+
+### Görevleri
+- Bir uygulamanın sunduğu verileri veya işlevleri dış dünyaya açar.  
+- İstemciler, API üzerinden bu verilere erişebilir veya işlem yapabilir.  
+
+#### Örnek
+- **Hava durumu API’si:** Kullanıcıya anlık hava bilgisi döner.  
+- **Banka API’si:** Para transferi veya bakiye sorgulama yapılır.  
+
+ **Kısacası:** API, **“uygulamalar arası köprü”** gibidir.  
+
+
+##  API Türleri
+
+### 1. REST (Representational State Transfer)
+- **HTTP protokolü** kullanır.  
+- Kaynaklara (`/users`, `/products`, `/orders`) URL üzerinden erişilir.  
+- **JSON** veya **XML** ile veri taşır (**JSON daha yaygın**).  
+
+📌 **Örnek:**  
+```http
+GET /users/1    → id=1 kullanıcısını getir
+POST /users     → yeni kullanıcı ekle
+  ````
+### 2. SOAP (Simple Object Access Protocol)
+- Daha **eski** ve **ağır** bir protokoldür.  
+- **XML tabanlıdır.**  
+- Daha çok **banka, sigorta** gibi güvenlik gerektiren sistemlerde tercih edilir.  
+- Katı kurallara ve standartlara sahiptir.  
+
+
+### 3. GraphQL
+- **Facebook** tarafından geliştirilmiştir.  
+- İstemci, yalnızca **ihtiyacı olan veriyi** isteyebilir.  
+- Tek bir endpoint üzerinden çalışır (**/graphql**).  
+- **JSON** ile veri döner.  
+
+####  Örnek Sorgu:
+```graphql
+{
+  user(id: 1) {
+    name
+    email
+  }
+}
+```
+➝ Sadece name ve email alanlarını döndürür.
+
+###  Özet Tablo: REST vs SOAP vs GraphQL
+
+| **Özellik**       | **REST**                    | **SOAP**                      | **GraphQL**                           |
+|--------------------|-----------------------------|--------------------------------|----------------------------------------|
+| **Veri Formatı**   | JSON / XML                  | XML                            | JSON                                   |
+| **Hız**            | Hızlı ve hafif              | Yavaş (ağır XML)               | Daha hızlı, esnek                      |
+| **Güvenlik**       | Orta (**HTTPS**)            | Yüksek (**WS-Security**)       | Orta (**JWT, HTTPS**)                  |
+| **Kullanım Alanı** | Modern **web/mobil**        | **Banka, sigorta**             | **Büyük veri**, frontend odaklı        |
+| **Endpoint Yapısı**| Çoklu (`/users`, `/products`)| Tek tip ama SOAP action        | Tek endpoint (`/graphql`)              |
+
+
+## HTTP ve HTTP Metodları
+
+### HTTP Nedir?
+
+**HTTP (HyperText Transfer Protocol)**, web üzerindeki veri iletişimini sağlayan bir protokoldür.  
+- **Tarayıcı** ile **sunucu** arasında **istek–cevap (request–response)** mantığıyla çalışır.  
+- Örneğin, bir web sitesine girdiğimizde tarayıcı sunucuya *“sayfayı gönder”* der, sunucu da cevabı yollar.  
+
+
+### HTTP Metodları
+
+| **Metod** | **Açıklama**                  | **Basit Örnek**                                      |
+|-----------|--------------------------------|------------------------------------------------------|
+| **GET**   | Sunucudan veri alma           | Bir e-ticaret sitesinde **ürün listesini çekmek**    |
+| **POST**  | Sunucuya yeni veri ekleme     | Kullanıcının **kayıt formu göndermesi**              |
+| **PUT**   | Var olan veriyi güncelleme    | Kullanıcı **profil bilgilerinin değiştirilmesi**     |
+| **DELETE**| Veriyi silme                  | Bir ürünün **sepetten çıkarılması**                  |
+
+#### HTTP Metodları ve Örnekleri  
+
+##### 1. GET – Veri çekmek  
+**Amaç:** Sunucudan bilgi almak.  
+
+ **Örnek Senaryo:**  
+Menüdeki kahveleri görmek istiyoruz.  
+
+```http
+GET /api/kahveler
+```
+
+➡ Sunucu bize JSON formatında tüm kahvelerin listesini döner.
+
+##### 2. POST – Yeni veri eklemek  
+
+**Amaç:** Sunucuya yeni bir kayıt eklemek.  
+
+ **Örnek Senaryo:**  
+Filtre kahve siparişi veriyoruz.  
+
+```http
+POST /api/siparisler
+````
+
+Body (gönderilen veri):
+
+```json
+{
+  "urun": "Filtre Kahve",
+  "adet": 2,
+  "boyut": "Grande"
+}
+```
+➡ Sunucu yeni siparişi oluşturur ve bize sipariş numarası döner.
+
+##### 3. PUT – Var olan veriyi güncellemek  
+
+**Amaç:** Mevcut bir kaydı tamamen değiştirmek.  
+
+ **Örnek Senaryo:**  
+Sipariş verdiğimiz kahveyi **küçük boy** yapmaya karar verdik.  
+
+```http
+PUT /api/siparisler/123
+```
+
+Body:
+
+```json
+{
+  "urun": "Filtre Kahve",
+  "adet": 2,
+  "boyut": "Tall"
+}
+```
+➡ Sipariş 123 artık küçük boy kahve ile güncellenir.
+
+##### 4. DELETE – Veri silmek  
+
+**Amaç:** Var olan bir kaydı silmek.  
+
+ **Örnek Senaryo:**  
+Siparişi iptal etmek istiyoruz.  
+
+```http
+DELETE /api/siparisler/123
+```
+➡ Sunucu siparişi siler ve şu yanıtı döner: "mesaj": "Sipariş iptal edildi"
+
+## RESTful Servislerin Çalışma Mantığı
+
+**REST (Representational State Transfer)**, web servislerinin nasıl tasarlanacağını belirleyen bir prensiptir.  
+
+### Mantığı
+- **Kaynaklar (resources)** vardır → örnek: **kullanıcılar, ürünler, siparişler**  
+- Bu kaynaklara **URL üzerinden** erişilir → `https://api.site.com/users/1`  
+- Her işlem için **HTTP metodları** kullanılır: **GET, POST, PUT, DELETE**  
+
+
+
+###  Küçük Senaryo: “Alışveriş Sitesi”
+
+```http
+GET /products      → Tüm ürünleri getir
+GET /products/5    → ID’si 5 olan ürünü getir
+POST /products     → Yeni ürün ekle
+PUT /products/5    → 5 numaralı ürünü güncelle
+DELETE /products/5 → 5 numaralı ürünü sil
+```
+- Görüldüğü gibi, URL’de sadece kaynak adı olur.
+- Ne yapılacağına HTTP metodu karar verir.
+
+#### REST’in Avantajları
+- Basit ve anlaşılırdır.
+- Her platformdan (C#, Java, Python, JavaScript vb.) kolayca kullanılabilir.
+- JSON formatı ile çalıştığı için hafif ve hızlıdır.
+
+### RESTful Servislerin Çalışma Mantığı
+
+```mermaid
+sequenceDiagram
+    participant Client as İstemci (Frontend)
+    participant Server as Sunucu (Backend / API)
+    participant DB as Veritabanı
+
+    Client->>Server: HTTP İsteği (GET/POST/PUT/DELETE)
+    Server->>DB: Veriyi sorgula / güncelle
+    DB-->>Server: Veriyi döndür
+    Server-->>Client: JSON formatında cevap
+    Client-->>Client: Kullanıcıya sonucu göster
+```
+
+## JSON Veri Formatı ve Kullanım Amacı
+
+- **JSON (JavaScript Object Notation)**, veri saklamak ve taşımak için kullanılan çok basit bir formattır.  
+- **İnsanların okuması kolaydır**, aynı zamanda bilgisayarlar da rahatça anlayıp işleyebilir.  
+- Özellikle **istemci (frontend)** ile **sunucu (backend)** arasında veri alışverişinde en çok tercih edilen formattır.  
+- Veriler **anahtar : değer (key : value)** şeklinde tutulur.
+  
+
+#### Örnek JSON Verisi
+
+```json
+{
+  "siparisId": 12345,
+  "urun": {
+    "ad": "Filtre Kahve",
+    "boyut": "Orta Boy",
+    "sicaklik": "Soguk",
+    "süt": false
+  },
+  "fiyat": 45.00,
+  "adet": 2,
+  "toplamTutar": 90.00,
+  "musteri": {
+    "ad": "Feyza",
+    "odemeYontemi": "Kredi Kartı"
+  },
+  "hazirMi": false
+}
+```
+#### Açıklama
+
+- **"siparisId": 12345** → Siparişin kimlik numarası.  
+- **"urun": {...}** → İç içe nesne, ürünün detaylarını tutuyor.  
+  - **"ad": "Filtre Kahve"** → Sipariş edilen ürün.  
+  - **"boyut": "Orta Boy"** → Kahvenin boyutu.  
+  - **"sicaklik": "Soguk"** → Kahvenin sıcak mı soğuk mu olacağı.  
+  - **"süt": false** → Sütsüz kahve seçilmiş.  
+- **"fiyat": 45.00** → Bir kahvenin fiyatı.  
+- **"adet": 2** → Kaç tane kahve sipariş edildiğini belirtir.  
+- **"toplamTutar": 90.00** → İki kahve için toplam ücret.  
+- **"musteri": {...}** → Müşteri bilgilerini içerir.  
+  - **"ad": "Feyza"** → Siparişi veren kişi.  
+  - **"odemeYontemi": "Kredi Kartı"** → Ödeme şekli.  
+- **"hazirMi": false** → Sipariş hazır mı? (**Henüz hazırlanıyor**).
+
+  👉 Bu örnekle, API’ye `/api/siparis/12345` şeklinde sorgu attığında sistem sana bu **JSON** çıktısını dönebilir.  
+
+ Aynı yapıyı, bir **kahve zincirinin mobil uygulamasında sipariş takibi** için düşünebilirsin.  
+Kullanıcı uygulamadan siparişini görüntüler, backend de bu JSON verisini döndürerek **sipariş detaylarını** sağlar.  
+
+## SOAP ve GraphQL Nedir, REST’ten Farkları
+
+###  SOAP (Simple Object Access Protocol)
+- **XML tabanlı** bir iletişim protokolüdür.  
+- Daha **katı kurallara** sahiptir (standart yapılar, güvenlik ekleri vs.).  
+- Özellikle **bankacılık, finans, telekom** gibi güvenliğin çok önemli olduğu yerlerde tercih edilir.  
+- Daha **ağırdır**, öğrenmesi ve kullanması **REST’e göre zordur**.  
+
+ **Benim için:** SOAP bana biraz *“eski usul ama güvenli”* sistemleri hatırlatıyor.  
+
+
+###  GraphQL
+- **Facebook** tarafından geliştirilmiş bir **sorgulama dili**dir.  
+- İstemci sadece **ihtiyacı olan veriyi** ister, fazlası gelmez.  
+- Tek bir **endpoint** üzerinden çalışır (REST’te olduğu gibi farklı endpointlere gerek kalmaz).  
+- Daha **esnek** ve **performanslıdır**, ama öğrenme eğrisi **REST’e göre biraz daha zordur**.  
+
+ **Benim için:** GraphQL bana *“menüden sadece istediğini seçip almak”* gibi geliyor.  
+
+
+## REST vs SOAP vs GraphQL Karşılaştırma
+
+
+| Özellik          | REST                        | SOAP                     | GraphQL                               |
+|------------------|-----------------------------|--------------------------|---------------------------------------|
+| **Veri formatı** | JSON (çoğunlukla)           | XML                      | JSON                                  |
+| **Esneklik**     | Orta (endpointlere bağlı)   | Düşük (çok katı)         | Yüksek (tam istenilen veri gelir)     |
+| **Kullanım alanı** | Genel web servisleri        | Bankacılık, güvenlik odaklı | Modern web & mobil uygulamalar        |
+| **Öğrenme kolaylığı** | Kolay                      | Zor                      | Orta                                  |
+| **Performans**   | Genelde iyi                 | Ağır                     | Daha hızlı (fazla veri gelmez)        |
+
+
+
 ## 4. ASP.NET
 ## 5. Veritabanı ve ORM
 ## 6. Güvenlik ve Performans
