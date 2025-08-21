@@ -1473,8 +1473,163 @@ Middleware sırası bana **havaalanı güvenlik sürecini** hatırlatıyor :
 
 ➡ Yanlış sırada olsa, yolculuk bozulur.
 
+---
 
 ## 5. Veritabanı ve ORM
+
+## SQL Nedir?
+
+**SQL (Structured Query Language)** veritabanlarıyla konuşmak için kullandığımız bir dildir.  
+Aslında veritabanı bizim için büyük bir **defter** gibi düşünülebilir.  
+
+SQL sayesinde bu deftere:
+
+-  **Yeni bilgi ekleriz** → `INSERT`  
+-  **Var olan bilgiyi okuruz** → `SELECT`  
+-  **Bilgiyi güncelleriz** → `UPDATE`  
+-  **Bilgiyi sileriz** → `DELETE`  
+
+
+
+### Örnek
+Okul defterinde öğrencilerin listesi var.  
+Ben şu SQL sorgusunu yazarsam:
+
+```sql
+SELECT * FROM Students;
+
+```
+Bana defterdeki tüm öğrencileri göster” demiş olurum.
+
+**Kısaca:** SQL, veritabanıyla soru-cevap yapmamızı sağlayan ortak bir dil.
+
+
+## İlişkisel ve İlişkisel Olmayan Veritabanları Arasındaki Farklar
+
+
+###  İlişkisel Veritabanı (Relational Database – RDBMS)
+- Veriler **tablolar halinde** tutulur (Excel sayfası gibi düşünebilirsin).  
+- Tablolar birbirine **ilişkiler** ile bağlanır.  
+- **Örnek:** `Students` tablosu ve `Courses` tablosu → öğrenci hangi derse kayıtlı ilişkisi.  
+- Kullanılan dil: **SQL**  
+- **Örnekler:** SQL Server, MySQL, PostgreSQL, Oracle  
+
+
+
+###  İlişkisel Olmayan Veritabanı (NoSQL Database)
+- Veri yapısı **tablo olmak zorunda değildir** → JSON, key-value, graph, document gibi farklı formatlarda saklanabilir.  
+- Daha **esnek**, özellikle **büyük veriler** ve **hızlı ölçeklenme** gereken durumlarda kullanılır.  
+- **Örnek kullanım:** Sosyal medya gönderileri, sensör verileri.  
+- **Örnekler:** MongoDB, Cassandra, Redis, CouchDB  
+
+
+
+###  Basit Bir Benzetme
+- **İlişkisel DB** → Düzenli bir **klasör dolabı** gibi. Her şey tablolara ayrılmış, kurallı.  
+- **NoSQL DB** → Daha özgür bir **kutu** gibi. İçine ister dosya, ister resim, ister JSON atabilirsin.  
+
+
+
+ **Kısaca:**  
+- Düzenli ve ilişkili veri → **İlişkisel DB**  
+- Esnek, hızlı ve farklı formatlarda veri → **İlişkisel olmayan DB**
+
+
+## ORM Nedir? Entity Framework Core Nedir?
+
+
+
+###  ORM (Object Relational Mapping)
+- ORM, veritabanı ile çalışırken **SQL sorguları yazmak yerine nesnelerle (class/objeler) işlem yapmamızı** sağlayan bir tekniktir.  
+- Yani tabloları **C# sınıfları** gibi düşünebilirim.  
+- **Avantajı:** Daha az kod, daha okunabilir ve bakımı kolay bir yapı.  
+- **Örnek:**  
+  `Student` tablosu için C#’ta `Student` sınıfı oluşturup doğrudan `student.Name` gibi erişebilirim.  
+
+
+
+###  Entity Framework Core (EF Core)
+- Microsoft’un geliştirdiği, **.NET projelerinde kullanılan popüler ORM aracıdır.**  
+- SQL yazmadan sadece **C# kodlarıyla** veritabanında işlem yapabilirim.  
+- Hem **Code-First** (önce kod → veritabanı oluşur) hem de **Database-First** (önce veritabanı → kod üretilir) yaklaşımlarını destekler.  
+- **Cross-platform** (Windows, Linux, macOS) çalışır.  
+
+#### Küçük Bir Örnek
+
+```csharp
+// Model
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+
+// DbContext
+public class SchoolContext : DbContext
+{
+    public DbSet<Student> Students { get; set; }
+}
+```
+➡ Bu kod ile EF Core, Students adında bir tabloyu veritabanında otomatik oluşturur.
+➡ Ben context.Students.Add(new Student { Name = "Ali" }) dediğimde SQL’de şu sorgu çalışmış olur:
+
+```sql
+INSERT INTO Students (Name) VALUES ('Ali')
+```
+
+**Kısaca:**
+ORM → Veritabanıyla nesneler üzerinden çalışmayı sağlayan teknoloji.
+EF Core → .NET projelerinde kullanılan Microsoft’un ORM aracıdır.
+
+
+## DbContext Nedir, Nasıl Kullanılır?
+
+ **DbContext**, Entity Framework Core’da veritabanı ile uygulama arasındaki köprü gibidir.  
+
+- Tabloları **DbSet** koleksiyonları olarak tutar.  
+- Veritabanına bağlanmayı, sorgu yapmayı ve değişiklikleri kaydetmeyi sağlar.  
+
+
+
+#### Nasıl Kullanılır?
+
+### DbContext sınıfı oluşturulur:
+```csharp
+public class SchoolContext : DbContext
+{
+    public DbSet<Student> Students { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("Server=.;Database=SchoolDB;Trusted_Connection=True;");
+    }
+}
+```
+#### Veri ekleme:
+
+```csharp
+using (var context = new SchoolContext())
+{
+    context.Students.Add(new Student { Name = "Ayşe" });
+    context.SaveChanges(); // SQL INSERT çalışır
+}
+```
+
+#### Veri çekme:
+
+```csharp
+using (var context = new SchoolContext())
+{
+    var students = context.Students.ToList(); // SQL SELECT çalışır
+}
+```
+
+ **Kısaca:**
+DbContext = Veritabanı yöneticisi
+DbSet = Tablolar
+SaveChanges() = Yapılan değişiklikleri veritabanına işler
+
+
 ## 6. Güvenlik ve Performans
 ## 7. Logging ve Hata Yönetimi
 ## 8. Yazılım Geliştirme Prensipleri
