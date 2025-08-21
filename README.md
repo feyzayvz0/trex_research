@@ -1,7 +1,17 @@
-# trex_research
+ç# trex_research
 .NET Backend Geliştirme - Temel Bilgi ve Kavramlar Araştırma Raporu
 
 # .NET Backend Geliştirme – Temel Bilgi ve Kavramlar
+
+## 📌 İçindekiler
+1. [Modern Yazılım Geliştirme Pratikleri](#1-modern-yazılım-geliştirme-pratikleri)
+2. [.NET Ekosistemi](#2-net-ekosistemi)
+3. [Backend Geliştirme Temelleri](#3-backend-geliştirme-temelleri)
+4. [ASP.NET](#4-aspnet)
+5. [Veritabanı ve ORM](#5-veritabanı-ve-orm)
+6. [Güvenlik ve Performans](#6-güvenlik-ve-performans)
+7. [Logging ve Hata Yönetimi](#7-logging-ve-hata-yönetimi)
+8. [Yazılım Geliştirme Prensipleri](#8-yazılım-geliştirme-prensipleri)
 
 ## 1. Modern Yazılım Geliştirme Pratikleri
 
@@ -327,7 +337,312 @@ jobs:
 - **Test:** Hataları bulup düzeltir.  
 - **Bakım:** Yazılımın sorunsuz çalışmaya devam etmesini sağlar.  
 
+---
+
 ## 2. .NET Ekosistemi
+
+## .NET Nedir?
+
+## Tarihçesi
+- **.NET**, Microsoft tarafından 2000’li yılların başında geliştirilmeye başlanmıştır.  
+- İlk sürümü **2002’de** çıktı.  
+- Başlangıçta sadece **Windows** için vardı, daha sonra **.NET Core** ile Linux ve macOS desteği geldi.  
+- Günümüzde **.NET 5, .NET 6, .NET 7, .NET 8** sürümleriyle devam ediyor ve artık **platformdan bağımsız** çalışabiliyor.  
+
+
+
+## Amacı
+- Yazılımcıların farklı platformlarda (**Windows, web, mobil, bulut**) uygulama geliştirmesini kolaylaştırmak.  
+- Tek bir çatı altında birden fazla programlama dilini desteklemek (**C#, F#, VB.NET**).  
+- Hızlı, güvenli ve modern uygulamalar geliştirmeye imkan vermek.  
+
+
+
+## Neden Kullanılır?
+- **Çok platformlu:** Windows, Linux, macOS üzerinde çalışır.  
+- **Geniş ekosistem:** Masaüstü, web, mobil, oyun (**Unity**), bulut uygulamaları geliştirilebilir.  
+- **C# dili:** Öğrenmesi kolay, güçlü ve yaygın bir dildir.  
+- **Performans:** Modern sürümlerde oldukça hızlıdır.  
+- **Topluluk ve destek:** Microsoft ve geniş bir topluluk tarafından sürekli geliştirilir.  
+
+
+ **Kısaca:**  
+.NET, yazılım geliştirmeyi kolaylaştıran ve farklı ortamlarda kullanılabilen **güçlü bir platformdur**.  
+
+
+## .NET Framework, .NET Core ve .NET 7/8+ Farkları
+
+## .NET Framework
+- **2002’de** çıktı, Microsoft tarafından geliştirildi.  
+- Sadece **Windows** üzerinde çalışır.  
+- **WinForms, WPF** gibi masaüstü uygulamaları için kullanılır.  
+- Artık yeni özellikler eklenmiyor, sadece bakım yapılıyor.  
+
+
+## .NET Core
+- **2016’da** çıktı.  
+- **Cross-platform** (Windows, Linux, macOS) desteği vardır.  
+- **Açık kaynak** olarak geliştirildi.  
+- Daha hızlı, hafif ve modern projeler için uygundur.  
+
+
+
+## .NET 5/6/7/8+ (Güncel .NET)
+- .NET Framework ve .NET Core birleşerek **tek platform** oldu.  
+- Artık sadece **“.NET”** ismiyle devam ediyor.  
+- **.NET 5 → 2020**, **.NET 6 → 2021 (LTS)**, **.NET 7 → 2022**, **.NET 8 → 2023 (LTS)**.  
+- Hem Framework’ün gücünü hem Core’un hızını birleştiriyor.  
+- Geniş destek alanları:  
+  - Web (**ASP.NET**)  
+  - Masaüstü (**WinForms, WPF**)  
+  - Mobil (**Xamarin, MAUI**)  
+  - Oyun (**Unity**)  
+  - Bulut uygulamaları  
+
+
+
+## Kıyaslama Tablosu
+
+| **Özellik**       | **.NET Framework**        | **.NET Core**                   | **.NET 7/8+ (Güncel)**        |
+|--------------------|---------------------------|----------------------------------|--------------------------------|
+| **Çıkış Yılı**     | 2002                      | 2016                             | 2020 (5), 2021–2023 (6/7/8)   |
+| **Çalıştığı Sistem** | Sadece Windows            | Windows, Linux, macOS            | Tüm platformlar                |
+| **Açık Kaynak**    | Hayır                     | Evet                             | Evet                           |
+| **Performans**     | Görece yavaş              | Daha hızlı, hafif                | En hızlı ve en güncel          |
+| **Durum**          | Yeni geliştirme yok       | Destekleniyor                    | Gelecek bu platformda          |
+
+
+
+ **Kısaca:**  
+- **.NET Framework** → Eski, sadece Windows için.  
+- **.NET Core** → Modern, açık kaynak ve platform bağımsız.  
+- **.NET 7/8+** → Gelecek, hepsini birleştiren tek ve güncel .NET.  
+
+
+## .NET Platformlar Arası Çalışabilir mi?
+
+## .NET Framework
+- Sadece **Windows** işletim sisteminde çalışır.  
+- **Linux** ve **macOS** desteği yoktur.  
+
+
+## .NET Core
+- **Windows, Linux ve macOS** üzerinde çalışabilir.  
+- Bu sayede aynı kod farklı sistemlerde kullanılabilir.  
+
+
+
+## .NET 5/6/7/8+
+- **Platformdan bağımsızdır**.  
+- Tek bir .NET çatısı altında hem **Windows**, hem **Linux** hem de **macOS**’ta çalışır.  
+- Ayrıca **mobil (Android, iOS)** ve **bulut uygulamaları** için de destek sunar.  
+
+
+
+ **Özet:**  
+Eski **.NET Framework** sadece Windows’a özel iken, **.NET Core** ile başlayan süreçte **.NET 7/8+** artık tamamen **cross-platform (çoklu platform)** hale gelmiştir.  
+
+## Senkron ve Asenkron Programlama
+
+## Senkron Programlama
+- İşlemler **sıra ile** yapılır.  
+- Bir işlem bitmeden diğeri başlamaz.  
+- Basit projelerde uygundur fakat uzun süren işlemlerde programın **kilitlenmesine** neden olabilir.  
+
+
+
+## Asenkron Programlama
+- İşlemler aynı anda yürüyormuş gibi çalışır.  
+- Uzun süren işlemler (**dosya okuma, veritabanı sorgusu, API çağrısı**) programı bekletmez.  
+- Kullanıcı arayüzü **donmaz**, program daha **hızlı** ve **akıcı** çalışır.  
+
+
+
+## Temel Kavramlar
+- **async** → Bir metodun **asenkron** çalışacağını belirtir.  
+- **await** → Asenkron işlemin bitmesini bekler ama programı **kilitlemez**.  
+- **Task** → Bir işi temsil eden nesnedir. Asenkron metotlar genelde **Task** döner.  
+- **ConfigureAwait(false)** → UI (arayüz) uygulamalarında, işlemin bitince aynı iş parçacığına dönüp dönmeyeceğini kontrol eder. Performans için kullanılır.  
+
+##  Örnek: Asenkron Metot Kullanımı
+
+```csharp
+public async Task GetDataAsync()
+{
+    var data = await httpClient.GetStringAsync("https://example.com");
+    Console.WriteLine(data);
+}
+```
+- Burada **GetDataAsync** metodu veri indirirken programı kilitlemez.
+- **await** ifadesi sayesinde veri indirilirken uygulama akışı donmaz.
+- Kullanıcı arayüzü akıcı kalır, başka işlemler devam edebilir.
+
+# Arrow Function (=>) C#’ta
+
+- **Lambda ifadesi** olarak da bilinir.  
+- Kısa ve okunabilir fonksiyon yazmak için kullanılır.  
+
+---
+
+##  Örnekler
+
+### Normal yöntem
+```csharp
+int Square(int x)
+{
+    return x * x;
+}
+```
+### Arrow function ile
+```csharp
+int Square(int x) => x * x;
+```
+### List filtreleme örneği
+```csharp
+var numbers = new List<int> {1, 2, 3, 4, 5};
+var even = numbers.Where(n => n % 2 == 0);
+````
+- => ifadesi sayesinde tek satırda fonksiyonlar tanımlanabilir.
+- Özellikle LINQ sorgularında çok sık kullanılır.
+
+### Özet:
+
+- Senkron = sırayla, bekletir.
+- Asenkron = aynı anda, bekletmez.
+- async/await, Task gibi yapılar asenkron programlamanın temelidir.
+- Arrow function (=>) C#’ta kısa ve pratik kod yazmayı sağlar.
+
+
+## Senkron ve Asenkron Programlama
+
+## 1. Temel Farklar
+
+| **Özellik**        | **Senkron Programlama**                       | **Asenkron Programlama**                          |
+|---------------------|-----------------------------------------------|--------------------------------------------------|
+| **Çalışma Şekli**   | İşlemler **sırayla** yapılır.                 | İşlemler **aynı anda yürüyormuş gibi** çalışır.  |
+| **Bekleme**         | Bir işlem bitmeden diğeri başlamaz.           | Uzun süren işlem beklerken diğerleri devam eder. |
+| **Kullanıcı Deneyimi** | Uzun işlemlerde program **donmuş gibi** olur. | Kullanıcı arayüzü **akıcı** kalır.               |
+| **Performans**      | Basit ama **yavaş** olabilir.                 | Daha **hızlı** ve **verimli** çalışır.           |
+| **Kullanım Alanı**  | Küçük ve kısa işlemler.                       | Dosya okuma, API çağrısı, veritabanı sorgusu gibi uzun işlemler. |
+
+##  dotnet --info Örneği
+
+ **Terminal çıktısı:**
+
+```bash
+$ dotnet --info
+.NET SDK:
+ Version:   8.0.100
+ Commit:    abc123
+
+Runtime Environment:
+ OS Name:     Windows
+ OS Version:  10.0.19045
+ RID:         win10-x64
+
+Host:
+ Version:    8.0.0
+ Architecture: x64
+```
+##  Yorum
+
+- **SDK Version** → Yüklü .NET sürümü (**8.0.100**)  
+- **OS Name/Version** → İşletim sistemi bilgisi (**Windows 10**)  
+- **Architecture** → 64-bit çalıştığını gösterir  
+
+ → Bu komut, hangi **.NET sürümüyle** geliştirme yaptığımızı öğrenmek için kullanılır.  
+
+ ## Senkron / Asenkron Senaryo
+
+## Senkron Senaryo
+- Bir kafede kahve almak istiyorsun.  
+- Kasaya gidiyorsun, sipariş veriyorsun.  
+- Kasiyer hem kahveyi hazırlıyor hem de parayı alıyor.  
+- Kahve hazır olmadan sıradaki müşteriyi almıyor.  
+- Yani herkes **tek tek beklemek zorunda**.  
+
+➡ Bu, **senkron programlama** gibidir: Bir işlem bitmeden diğeri başlamaz.  
+
+
+## Asenkron Senaryo
+- Aynı kafede başka bir durum düşün:  
+- Kasada siparişini veriyorsun, ödemeyi yapıyorsun.  
+- Kasiyer sana bir fiş veriyor ve sen kenarda beklerken başka müşterilere hizmet ediyor.  
+- Barista kahveni hazırlıyor, hazır olunca adını sesleniyor ve alıyorsun.  
+- Böylece hem sen beklerken boş durmuyorsun hem de kasada işler tıkanmıyor.  
+
+➡ Bu da **asenkron programlama** gibidir: İşler aynı anda yürüyormuş gibi devam eder.  
+
+
+
+##  Yazılım Açısından
+- **Senkron →** Program bir işi yaparken diğerini **bekletir**.  
+- **Asenkron →** Uzun süren iş arka planda devam ederken program **başka işleri de yapar**.
+
+  ## C# Senkron Örnek
+
+```csharp
+// Senkron örnek
+using System;
+using System.Threading;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Dosya indiriliyor...");
+        DownloadFile(); // Bu bitmeden aşağıya geçmez
+        Console.WriteLine("İndirme tamamlandı.");
+        Console.WriteLine("Program bitti.");
+    }
+
+    static void DownloadFile()
+    {
+        // 3 saniye dosya indiriyormuş gibi bekletelim
+        Thread.Sleep(3000);
+    }
+}
+```
+ ➡ Burada Thread.Sleep dosya indiriyormuş gibi davranıyor.
+Kod, indirme bitene kadar bekliyor.
+Başka iş yapılmıyor, program bloklanıyor.
+
+## C# Asenkron Örnek
+
+```csharp
+// Asenkron örnek
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    static async Task Main()
+    {
+        Console.WriteLine("Dosya indiriliyor...");
+        var task = DownloadFileAsync(); // İndirme başladı ama bekletmiyor
+        Console.WriteLine("Başka işler yapılabiliyor...");
+        
+        await task; // İndirme bitince devam eder
+        Console.WriteLine("İndirme tamamlandı.");
+        Console.WriteLine("Program bitti.");
+    }
+
+    static async Task DownloadFileAsync()
+    {
+        // 3 saniye dosya indiriyormuş gibi bekletelim
+        await Task.Delay(3000);
+    }
+}
+```
+➡ Burada Task.Delay kullanıldı.
+
+İndirme devam ederken program başka iş yapabiliyor.
+Sonunda await ile indirme tamamlanıyor.
+#### Özet
+**Senkron:** Her şey sırayla → İndirme bitmeden başka iş olmaz.
+**Asenkron:** İşler aynı anda yürüyormuş gibi → İndirme devam ederken başka işler yapılabilir.
+
+
 ## 3. Backend Geliştirme Temelleri
 ## 4. ASP.NET
 ## 5. Veritabanı ve ORM
