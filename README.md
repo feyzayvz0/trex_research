@@ -1,4 +1,4 @@
-ç# trex_research
+# trex_research
 .NET Backend Geliştirme - Temel Bilgi ve Kavramlar Araştırma Raporu
 
 # .NET Backend Geliştirme – Temel Bilgi ve Kavramlar
@@ -1628,6 +1628,198 @@ using (var context = new SchoolContext())
 DbContext = Veritabanı yöneticisi
 DbSet = Tablolar
 SaveChanges() = Yapılan değişiklikleri veritabanına işler
+
+## LINQ Nedir?
+
+**LINQ (Language Integrated Query)**, C# içinde sorgu yazmamızı kolaylaştıran bir özelliktir.  
+
+- Normalde SQL ile yaptığımız sorguları, C# koleksiyonları ya da veritabanı üzerinde LINQ ile yapabiliriz.  
+- **Avantajı:** Daha okunabilir, daha güvenli (**compile-time kontrolü**) ve SQL bilmeden de sorgulama yapılabilmesi.  
+
+
+
+### En Çok Kullanılan LINQ İfadeleri
+
+#### 1️ Where (Filtreleme)
+```csharp
+var result = students.Where(s => s.Age > 18).ToList();
+```
+➡ SQL karşılığı:
+
+```sql
+SELECT * FROM Students WHERE Age > 18;
+```
+#### 2️ Select (Kolon seçme / Projeksiyon)
+```csharp
+var names = students.Select(s => s.Name).ToList();
+```
+➡ SQL karşılığı:
+
+```sql
+SELECT Name FROM Students;
+```
+#### 3️ OrderBy / OrderByDescending (Sıralama)
+```csharp
+var ordered = students.OrderBy(s => s.Name).ToList();
+```
+➡ SQL karşılığı:
+
+```sql
+SELECT * FROM Students ORDER BY Name ASC;
+```
+#### 4️ First / FirstOrDefault (İlk eleman)
+```csharp
+
+var firstStudent = students.FirstOrDefault();
+```
+
+➡ SQL karşılığı (mantıksal):
+
+```sql
+
+SELECT TOP 1 * FROM Students;
+```
+
+#### 5️ Count (Sayı bulma)
+```csharp
+
+int count = students.Count();
+```
+
+➡ SQL karşılığı:
+```sql
+
+SELECT COUNT(*) FROM Students;
+```
+➡Kısaca
+
+# LINQ ↔ SQL Karşılaştırma Tablosu
+
+| LINQ İfadesi      | Açıklama                  | LINQ Örneği                                                                                   | SQL Karşılığı                                                                                   |
+|-------------------|---------------------------|-----------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
+| **Where**         | Filtreleme yapar          | `students.Where(s => s.Age > 18).ToList();`                                                   | `SELECT * FROM Students WHERE Age > 18;`                                                       |
+| **Select**        | Kolon seçme / projeksiyon | `students.Select(s => s.Name).ToList();`                                                      | `SELECT Name FROM Students;`                                                                    |
+| **OrderBy**       | Sıralama (ASC)            | `students.OrderBy(s => s.Name).ToList();`                                                     | `SELECT * FROM Students ORDER BY Name ASC;`                                                     |
+| **OrderByDescending** | Ters sıralama (DESC)  | `students.OrderByDescending(s => s.Age).ToList();`                                            | `SELECT * FROM Students ORDER BY Age DESC;`                                                     |
+| **FirstOrDefault** | İlk kaydı getirir        | `students.FirstOrDefault();`                                                                  | `SELECT TOP 1 * FROM Students;`                                                                 |
+| **Count**         | Kayıt sayısını bulur      | `students.Count();`                                                                           | `SELECT COUNT(*) FROM Students;`                                                                |
+| **Max**           | En büyük değeri bulur     | `students.Max(s => s.Age);`                                                                   | `SELECT MAX(Age) FROM Students;`                                                                |
+| **Average**       | Ortalama değeri bulur     | `students.Average(s => s.Age);`                                                               | `SELECT AVG(Age) FROM Students;`                                                                |
+| **Join**          | Tablo birleştirme         | `students.Join(courses, s => s.Id, c => c.StudentId, (s,c) => new { s.Name, c.CourseName });` | `SELECT s.Name, c.CourseName FROM Students s INNER JOIN Courses c ON s.Id = c.StudentId;`       |
+
+
+- LINQ = SQL gibi sorgu yazmayı C# içine taşıyan bir özellik.
+Hem veritabanı hem de liste/array gibi koleksiyonlar üzerinde çalışabiliyor.
+
+
+## Code-First ve Database-First Yaklaşımı
+
+
+## Code-First Yaklaşımı
+
+- Önce C# sınıfları (entity’ler) yazılır.  
+- EF Core bu sınıflara göre veritabanını oluşturur.  
+- Yani “önce kod, sonra veritabanı” mantığı vardır.  
+- Avantajı: Kod tarafında hızlıca başlamak kolaydır, veritabanı otomatik oluşur.  
+
+**Örnek:**
+```csharp
+public class Student
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+}
+```
+➡ Bu sınıfı yazdıktan sonra migration komutu çalıştırılır → EF Core `Students` tablosunu veritabanında oluşturur.  
+
+
+## Database-First Yaklaşımı
+
+- Önce veritabanı hazırdır (tablolar, ilişkiler oluşturulmuştur).  
+- EF Core ya da Visual Studio araçlarıyla kod tarafına sınıflar otomatik üretilir.  
+- Yani “önce veritabanı, sonra kod” mantığı vardır.  
+- Avantajı: Mevcut bir veritabanıyla çalışırken hızlıdır.  
+
+**Örnek:**  
+Eğer elimde `Students` tablosu varsa, EF Core bana otomatik `Student` sınıfını üretir.  
+
+
+## Kısaca Fark
+
+| Özellik           | Code-First                  | Database-First                |
+|-------------------|-----------------------------|-------------------------------|
+| Başlangıç Noktası | Kod (C# entity sınıfları)   | Veritabanı (tablolar, ilişkiler) |
+| Kullanım Durumu   | Yeni projelerde             | Mevcut veritabanıyla çalışırken |
+| Avantajı          | Esnek, hızlı geliştirme     | Hazır DB ile kolay uyum        |
+
+
+
+### Benim için
+
+- **Code-First** = Sıfırdan proje başlatırken en pratik yol.  
+- **Database-First** = Zaten var olan bir veritabanı ile çalışmam gerekirse en mantıklı yol.  
+
+
+## Temel SQL Sorguları
+
+
+## 1️ SELECT → Veri çekmek
+Veritabanındaki kayıtları listelemek için kullanılır.
+
+```sql
+SELECT * FROM Students;
+```
+➡ Students tablosundaki tüm öğrencileri getirir.
+
+Sadece isimleri çekmek istersem:
+
+```sql
+
+SELECT Name FROM Students;
+```
+## 2️ INSERT → Veri eklemek
+Tabloya yeni kayıt eklemek için kullanılır.
+
+```sql
+
+INSERT INTO Students (Name, Age) VALUES ('Ayşe', 20);
+```
+➡ Students tablosuna yeni bir öğrenci ekler.
+
+## 3️ UPDATE → Veri güncellemek
+Var olan bir kaydı değiştirmek için kullanılır.
+
+```sql
+
+UPDATE Students SET Age = 21 WHERE Name = 'Ayşe';
+```
+➡ Ayşe’nin yaşını 21 olarak günceller.
+
+## 4️ DELETE → Veri silmek
+Tablodan kayıt silmek için kullanılır.
+
+```sql
+
+DELETE FROM Students WHERE Name = 'Ayşe';
+```
+➡ Adı Ayşe olan öğrenciyi tablodan siler.
+
+ **Kısaca:**
+ 
+ ➡ SQL’in dört temel yapı taşı bunlardır.
+
+- SELECT → Oku
+
+- INSERT → Ekle
+
+- UPDATE → Güncelle
+
+- DELETE → Sil
+
+
+
+
+
 
 
 ## 6. Güvenlik ve Performans
