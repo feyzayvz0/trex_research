@@ -2203,12 +2203,240 @@ public IActionResult SendMoney(MoneyTransferModel model) { ... }
 - Anti-Forgery Token → CSRF saldırılarını engeller.
 - Strong Auth & JWT → Kimlik doğrulamayı sağlamlaştırır.
 
-
-
-
-
-
-
+---
 
 ## 7. Logging ve Hata Yönetimi
+
+## Neden Loglama Yapılır?
+
+Loglama, uygulamanın geçmişte neler yaptığını görebilmek için önemlidir.
+
+- Hataları tespit etmek  
+- Uygulamanın hangi adımlardan geçtiğini görmek  
+- Canlı ortamda sorun olduğunda geriye dönüp inceleyebilmek  
+
+Kısaca loglar, yazılımın **günlük defteri** gibidir.
+
+
+
+## Log Seviyesi Nedir?
+
+Trace → En detaylı log, geliştirme sırasında kullanılır.
+
+Debug → Hata ayıklama için, geliştirme ortamında.
+
+Information → Normal akış bilgisi (kullanıcı giriş yaptı).
+
+Warning → Uyarı, ama sistem çalışmaya devam ediyor (disk dolmak üzere).
+
+Error → Hata oldu, uygulama çalışmaya devam edebilir.
+
+Critical → Çok ciddi hata, uygulama çökebilir.
+
+💡 Kısaca: Log seviyesi bize “bu olay ne kadar önemli?” sorusunun cevabını verir.
+
+
+## ASP.NET Core’da Logging Altyapısı
+
+ASP.NET Core’da loglama için hazır bir altyapı vardır. Ekstra kurulum yapmadan direkt kullanılabilir.  
+Loglar farklı yerlere yazılabilir:
+
+- Konsol (Console)  
+- Dosya  
+- Veritabanı  
+- Harici sistemler (Serilog, NLog, Elastic, Application Insights vb.)  
+
+
+
+## Kullanımı
+
+ASP.NET Core’da log yazmak için **ILogger** kullanılır.
+
+```csharp
+public class HomeController : Controller
+{
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(ILogger<HomeController> logger)
+    {
+        _logger = logger;
+    }
+
+    public IActionResult Index()
+    {
+        _logger.LogInformation("Index sayfası açıldı");
+        _logger.LogWarning("Disk alanı azaldı!");
+        _logger.LogError("Bir hata oluştu!");
+        return View();
+    }
+}
+
+```
+**Kısaca:**
+ILogger → Log yazmak için kullanılır.
+Loglar farklı kaynaklara kaydedilebilir.
+Hangi seviyede log alınacağı **appsettings.json** dosyasında ayarlanabilir.
+```json
+"Logging": {
+  "LogLevel": {
+    "Default": "Information",
+    "Microsoft": "Warning",
+    "Microsoft.Hosting.Lifetime": "Information"
+  }
+}
+```
+**Açıklama**
+- Default: Information → Uygulamadaki genel loglar Information seviyesinden itibaren yazılır.
+- Microsoft: Warning → Microsoft kütüphanelerinden gelen loglar sadece Warning ve üzeri olduğunda kaydedilir.
+- Microsoft.Hosting.Lifetime: Information → Uygulamanın başlama/durma gibi yaşam döngüsü logları Information seviyesinde tutulur.
+
+**Kısaca**
+ILogger ile log yazılır.
+appsettings.json dosyasında hangi seviyeden itibaren log alınacağı ayarlanır.
+Böylece gereksiz log kalabalığı engellenir ve sadece ihtiyacımız olan detaylar tutulur.
+
+
+## Global Exception Handling Nasıl Yapılır?
+
+Uygulamada hataları tek tek try/catch ile yakalamak yerine hepsini tek yerde yakalamak daha düzenli olur. Buna global exception handling denir.
+
+**Bunu yapmanın birkaç yolu var:**
+
+**1) UseExceptionHandler ile*
+
+ASP.NET Core’da hazır gelen bir yöntemdir.
+
+```csharp
+app.UseExceptionHandler("/error");
+
+app.Map("/error", (HttpContext context) =>
+{
+    context.Response.StatusCode = 500;
+    return Results.Problem("Beklenmeyen bir hata oluştu.");
+});
+```
+
+➡ Burada uygulamada hata olursa otomatik olarak /error adresine düşer ve kullanıcıya standart bir mesaj gösterilir.
+
+**2) Middleware ile*
+
+Kendi middleware’imi yazarak tüm hataları yakalayabilirim.
+
+```csharp
+
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next();
+    }
+    catch (Exception ex)
+    {
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("Bir hata oluştu.");
+    }
+});
+```
+
+➡ Bu şekilde her istek buradan geçtiği için hata olursa tek yerde yakalanır.
+
+**Kısaca:**
+
+- UseExceptionHandler → Hazır çözüm, kolay kullanım.
+- Middleware → Daha fazla kontrol, özel cevap dönebilirim.
+- İkisinde de log alırsam hem kullanıcıya düzgün bir mesaj gider hem de ben hatayı takip edebilirim.
+
+
+### 	UseExceptionHandler ve ILogger nasıl kullanılır?
+
+ASP.NET Core’da hataları yakalayıp loglamak için bu ikisini birlikte kullanabilirim.
+
+#### UseExceptionHandler
+
+UseExceptionHandler, uygulamada oluşan tüm beklenmeyen hataları yakalar ve belirlediğim bir endpoint’e yönlendirir.
+
+```csharp
+app.UseExceptionHandler("/error");
+
+app.Map("/error", (HttpContext context) =>
+{
+    context.Response.StatusCode = 500;
+    return Results.Problem("Beklenmeyen bir hata oluştu.");
+});
+```
+
+➡ Burada hata olunca /error çalışır ve kullanıcıya standart bir mesaj döner.
+
+#### ILogger
+
+ILogger, uygulamada bilgi, uyarı ve hata mesajlarını kaydetmek için kullanılır.
+
+```csharp
+public class HomeController : Controller
+{
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(ILogger<HomeController> logger)
+    {
+        _logger = logger;
+    }
+
+    public IActionResult Index()
+    {
+        _logger.LogInformation("Index sayfası açıldı");
+        return View();
+    }
+
+    public IActionResult Error()
+    {
+        _logger.LogError("Bir hata meydana geldi!");
+        return View();
+    }
+}
+```
+
+➡ Burada LogInformation, LogWarning, LogError gibi seviyelerle log yazabilirim.
+
+**Birlikte Kullanım**
+
+En güzeli bu ikisini birleştirmektir:
+
+```csharp
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var feature = context.Features.Get<IExceptionHandlerFeature>();
+
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(feature?.Error, "Global hata yakalandı");
+
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsync("Beklenmeyen bir hata oluştu.");
+    });
+});
+```
+
+➡ Burada hata yakalanıyor, ILogger ile kayda geçiyor, kullanıcıya da güvenli bir mesaj dönülüyor.
+
+**Kısaca**
+
+- UseExceptionHandler → Hataları tek yerde yakalar.
+- ILogger → Bu hataları (ve diğer olayları) loga yazar.
+- Birlikte kullanıldığında hem kullanıcıya düzgün cevap verilir hem de hatalar kayıt altına alınır.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 8. Yazılım Geliştirme Prensipleri
