@@ -119,6 +119,43 @@ Bir branch’te yapılan değişiklikleri başka bir branch ile birleştirir.
 #### → Feature branch = yeni bir özellik geliştirme dalı.
 Ana kodu bozmadan, güvenli şekilde geliştirme yapmayı sağlar.
 
+## `git status`
+- Çalışma alanındaki dosyaların durumunu gösterir.  
+- Hangi dosyaların değiştiğini, hangilerinin staging area’da olduğunu görebiliriz.  
+
+### Örnek:
+```bash
+$ git status
+On branch main
+Changes not staged for commit:
+  modified:   program.cs
+Untracked files:
+  yeni-dosya.txt
+```
+➡ Burada program.cs değiştirilmiş ama staging’e alınmamış,
+yeni-dosya.txt ise hiç takip edilmiyor.
+
+## `git log`
+- Commit geçmişini listeler.
+- Kim, ne zaman, hangi mesajla commit yapmış görebiliriz.
+
+Örnek:
+```bash
+$ git log
+commit a1b2c3d4 (HEAD -> main)
+Author: Feyza <feyza@example.com>
+Date:   Mon Aug 19 10:00 2025
+
+    Kullanıcı giriş sistemi eklendi
+
+commit e5f6g7h8
+Author: Feyza <feyza@example.com>
+Date:   Sun Aug 18 14:30 2025
+
+    İlk proje yapısı oluşturuldu
+```
+➡ Böylece proje geçmişini takip edip gerekirse eski commit’e dönebiliriz.
+
 #### Küçük Terminal Çıktısı Örneği
 
 ```bash
@@ -513,7 +550,7 @@ var even = numbers.Where(n => n % 2 == 0);
 - Arrow function (=>) C#’ta kısa ve pratik kod yazmayı sağlar.
 
 
-## Senkron ve Asenkron Programlama
+## Senkron ve Asenkron Programlama Tablosu
 
 ## 1. Temel Farklar
 
@@ -1412,7 +1449,7 @@ flowchart TD
 
 
 #### Benim Yorumum
-- Clean Architecture bana **soğan katmanlarını ** hatırlatıyor.  
+- Clean Architecture bana **soğan katmanlarını** hatırlatıyor.  
 - En içte özü (**iş kuralları**) koruyoruz.  
 - Dış katmanlar (UI, DB, Framework) değişse bile içteki kurallar bozulmuyor.  
 
@@ -2120,6 +2157,20 @@ Güvenlik olaylarının kayıt altına alınmaması.
 Sunucunun başka sistemlere istenmeyen istekler göndermesi.  
 **Örn:** Kullanıcıdan alınan bir URL ile sunucunun iç ağa istek göndermesi.
 
+# OWASP Top 10 – Web Uygulamalarında En Yaygın Güvenlik Açıkları
+
+| #  | Açık Adı | Açıklama | Örnek |
+|----|----------|----------|-------|
+| 1️⃣ | **Broken Access Control** (Yetki Kontrollerinin Bozulması) | Kullanıcıya ait olmayan verilere erişim sağlanabilmesi | Normal bir kullanıcının admin sayfasına girebilmesi |
+| 2️⃣ | **Cryptographic Failures** (Şifreleme Hataları) | Verilerin şifrelenmeden saklanması veya zayıf algoritmalar | Parolaların düz metin olarak tutulması |
+| 3️⃣ | **Injection** (Enjeksiyon) | Kullanıcıdan alınan verilerin kontrol edilmeden çalıştırılması | SQL Injection → `' OR '1'='1` |
+| 4️⃣ | **Insecure Design** (Güvensiz Tasarım) | Güvenlik düşünülmeden yapılan uygulama tasarımı | Parolasız kritik işlemlere izin verilmesi |
+| 5️⃣ | **Security Misconfiguration** (Yanlış Yapılandırma) | Gereksiz servislerin açık kalması, default şifrelerin değiştirilmemesi | “admin/admin” ile giriş yapılabilmesi |
+| 6️⃣ | **Vulnerable & Outdated Components** (Güncel Olmayan Kütüphaneler) | Eski framework veya kütüphane kullanımı | Güvenlik açığı bilinen eski bir jQuery sürümü |
+| 7️⃣ | **Identification & Authentication Failures** (Kimlik Doğrulama Hataları) | Login süreçlerinde zayıf kontroller | Brute force saldırılarına karşı koruma olmaması |
+| 8️⃣ | **Software & Data Integrity Failures** (Bütünlük Hataları) | Güncellemelerin doğrulanmadan yüklenmesi | Kaynağı belirsiz bir paketin yüklenmesi |
+| 9️⃣ | **Security Logging & Monitoring Failures** (Loglama Eksikliği) | Güvenlik olaylarının kayıt altına alınmaması | Şüpheli giriş denemelerinin loglanmaması |
+| 🔟 | **Server-Side Request Forgery (SSRF)** | Sunucunun başka sistemlere istenmeyen istek göndermesi | Kullanıcıdan alınan bir URL ile iç ağa istek göndermek |
 
 
 #### 💡 Kısaca:
@@ -2425,18 +2476,410 @@ app.UseExceptionHandler(errorApp =>
 - ILogger → Bu hataları (ve diğer olayları) loga yazar.
 - Birlikte kullanıldığında hem kullanıcıya düzgün cevap verilir hem de hatalar kayıt altına alınır.
 
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 
 ## 8. Yazılım Geliştirme Prensipleri
+
+
+### SOLID Prensipleri
+**1) S – Single Responsibility Principle (Tek Sorumluluk Prensibi)**
+
+Bir sınıfın sadece tek bir sorumluluğu olmalı.
+Yani “her şeyi yapan” sınıf yerine, “tek işi yapan” sınıf yazmalıyız.
+
+**Örnek:*
+```csharp
+// Yanlış: Hem kayıt ediyor hem log tutuyor
+public class UserService
+{
+    public void SaveUser(User user) { /* kayıt */ }
+    public void Log(string message) { /* log */ }
+}
+
+// Doğru: Sorumluluk ayrıldı
+public class UserService
+{
+    public void SaveUser(User user) { /* kayıt */ }
+}
+public class Logger
+{
+    public void Log(string message) { /* log */ }
+}
+```
+
+**2) O – Open/Closed Principle (Açık/Kapalı Prensibi)**
+
+Kod geliştirmeye açık, değiştirmeye kapalı olmalı.
+Yeni özellik eklemek için eski kodu değiştirmek yerine genişletmeliyiz.
+
+**Örnek:*
+
+```csharp
+public abstract class Shape
+{
+    public abstract double Area();
+}
+
+public class Circle : Shape
+{
+    public double Radius { get; set; }
+    public override double Area() => Math.PI * Radius * Radius;
+}
+
+public class Rectangle : Shape
+{
+    public double Width { get; set; }
+    public double Height { get; set; }
+    public override double Area() => Width * Height;
+}
+
+```
+
+➡ Yeni şekil eklemek istediğimde mevcut sınıfları değiştirmiyorum, sadece yeni sınıf ekliyorum.
+
+**3) L – Liskov Substitution Principle (Liskov’un Yerine Geçme Prensibi)**
+
+Türeyen sınıflar, türediği sınıfın yerine sorunsuzca kullanılabilmeli.
+
+**Örnek:*
+```csharp
+public class Bird
+{
+    public virtual void Fly() { }
+}
+
+public class Sparrow : Bird
+{
+    public override void Fly() { /* uçar */ }
+}
+
+// Ama
+public class Penguin : Bird
+{
+    // Penguin uçamaz → Liskov prensibini bozuyor
+}
+```
+
+➡ Eğer Penguin için `Fly()` metodu yazmak zorunda kalıyorsam yanlış tasarım vardır.
+
+**4) I – Interface Segregation Principle (Arayüzlerin Ayrımı Prensibi)**
+
+Bir sınıfa ihtiyacı olmayan metodları zorla kullandırmamak lazım.
+Büyük arayüzler yerine küçük ve odaklı arayüzler kullanılmalı.
+
+**Örnek:*
+```csharp
+// Yanlış
+public interface IWorker
+{
+    void Work();
+    void Eat();
+}
+
+// Doğru
+public interface IWork
+{
+    void Work();
+}
+public interface IEat
+{
+    void Eat();
+}
+```
+
+**5) D – Dependency Inversion Principle (Bağımlılığı Tersine Çevirme Prensibi)**
+
+Sınıflar, somut nesnelere değil, soyutlamalara (interface) bağlı olmalı.
+
+**Örnek:*
+```csharp
+// Yanlış: SmsService’e sıkı bağlı
+public class Notification
+{
+    private SmsService _sms = new SmsService();
+    public void Send(string msg) => _sms.SendSms(msg);
+}
+
+// Doğru: Interface üzerinden bağımlılık
+public interface IMessageService
+{
+    void Send(string msg);
+}
+
+public class SmsService : IMessageService
+{
+    public void Send(string msg) { /* sms gönder */ }
+}
+
+public class Notification
+{
+    private readonly IMessageService _service;
+    public Notification(IMessageService service) => _service = service;
+    public void Send(string msg) => _service.Send(msg);
+}
+```
+
+**Kısaca**
+
+S → Her sınıf tek iş yapsın.
+
+O → Yeni özellik eklerken mevcut kodu bozma.
+
+L → Kalıtım doğru kullanılmalı, alt sınıf üst sınıfın yerine geçebilmeli.
+
+I → Büyük interface yerine küçük ve odaklı interface kullan.
+
+D → Somut nesneye değil, interface’e bağımlı ol.
+
+### SOLID Prensipleri – Özet Tablo
+
+| Harf | Açılımı                   | Ne Demek?                                           | Küçük Örnek / Benzetme                                                                 |
+|------|----------------------------|----------------------------------------------------|-----------------------------------------------------------------------------------------|
+| **S** | Single Responsibility      | Bir sınıfın tek sorumluluğu olmalı                 | `UserService` sadece kayıt yapar, log için ayrı `Logger` sınıfı olur                    |
+| **O** | Open/Closed               | Geliştirmeye açık, değiştirmeye kapalı olmalı       | Yeni şekil eklemek için mevcut kodu bozma, yeni sınıf ekle                              |
+| **L** | Liskov Substitution       | Alt sınıf üst sınıfın yerine sorunsuz geçebilmeli   | Serçe (uçabiliyor) → kuş gibi kullanılabilir ama penguen uçamıyorsa yanlış              |
+| **I** | Interface Segregation     | Geniş interface yerine küçük odaklı interface kullan | `Worker` → `Work()` ve `Eat()` ayır, herkes sadece ihtiyacını uygulasın                 |
+| **D** | Dependency Inversion      | Somut sınıflara değil, interface’lere bağımlı ol    | Notification → `SmsService`’e değil, `IMessageService`’e bağlı olmalı                  |
+
+
+### Design Patterns
+**1) Singleton Pattern**
+
+Bir sınıftan sadece bir tane nesne oluşturulmasını sağlar.
+Genelde ortak kullanılan servisler için tercih edilir (ör. Config, Logger).
+
+**Örnek:*
+```csharp
+public class Logger
+{
+    private static Logger _instance;
+    private static readonly object _lock = new object();
+
+    private Logger() { }
+
+    public static Logger Instance
+    {
+        get
+        {
+            lock (_lock)
+            {
+                if (_instance == null)
+                    _instance = new Logger();
+                return _instance;
+            }
+        }
+    }
+
+    public void Log(string message) => Console.WriteLine(message);
+}
+```
+
+➡ Burada Logger.Instance diyerek hep aynı nesneye erişirim.
+
+**2) Repository Pattern**
+
+Veritabanı işlemlerini soyutlamak için kullanılır.
+Amaç, kod ile veritabanı arasına bir katman koymak ve doğrudan SQL yazmamak.
+
+**Örnek:*
+
+```csharp
+public interface IProductRepository
+{
+    void Add(Product product);
+    IEnumerable<Product> GetAll();
+}
+
+public class ProductRepository : IProductRepository
+{
+    private readonly AppDbContext _context;
+    public ProductRepository(AppDbContext context)
+    {
+        _context = context;
+    }
+
+    public void Add(Product product)
+    {
+        _context.Products.Add(product);
+        _context.SaveChanges();
+    }
+
+    public IEnumerable<Product> GetAll()
+    {
+        return _context.Products.ToList();
+    }
+}
+```
+
+➡ Kod tarafı sadece interface’i bilir, veritabanı detayı repository’nin içinde kalır.
+
+**3) Factory Pattern**
+
+Nesne oluşturma işini merkezi bir noktada toplar.
+“new” anahtar kelimesini her yerde yazmak yerine, Factory sınıfı üzerinden nesne oluşturulur.
+
+**Örnek:*
+
+```csharp
+public interface IAnimal
+{
+    void Speak();
+}
+
+public class Dog : IAnimal
+{
+    public void Speak() => Console.WriteLine("Hav!");
+}
+
+public class Cat : IAnimal
+{
+    public void Speak() => Console.WriteLine("Miyav!");
+}
+
+public class AnimalFactory
+{
+    public static IAnimal CreateAnimal(string type)
+    {
+        return type switch
+        {
+            "dog" => new Dog(),
+            "cat" => new Cat(),
+            _ => throw new Exception("Geçersiz hayvan türü")
+        };
+    }
+}
+```
+
+➡ Kullanım:
+
+IAnimal animal = AnimalFactory.CreateAnimal("dog");
+animal.Speak(); // Hav!
+
+**Kısaca**
+
+- Singleton → Uygulamada tek bir nesne.
+- Repository → Veritabanı işlemlerini soyutlama.
+- Factory → Nesne oluşturmayı merkezi hale getirme.
+
+### Clean Code Nedir, Neden Önemlidir?
+
+**Clean Code (Temiz Kod)**, okunabilir, anlaşılır ve bakımı kolay kod yazma yaklaşımıdır.
+Sadece çalışması değil, anlaşılır olması da önemlidir.
+
+**Özellikleri**
+
+- Anlaşılır isimler → int a; yerine int studentCount;
+- Tek sorumluluk → Her metod/sınıf tek iş yapmalı.
+- Gereksiz tekrar yok → Aynı kodu kopyalamak yerine ortak fonksiyon yazılır.
+- Basitlik → Karmaşık yazmak yerine en açık hali tercih edilir.
+- Neden Önemli?
+- Başkası (ya da ben kendim) aylar sonra koda baktığında kolayca anlayabilirim.
+- Hata bulmak ve geliştirme yapmak çok daha hızlı olur.
+- Takım çalışmasında ortak bir dil oluşturur.
+- Küçük Örnek
+
+**❌ Kötü Kod**
+```csharp
+public void M(List<int> x)
+{
+    for (int i = 0; i < x.Count; i++)
+    {
+        if (x[i] % 2 == 0) Console.WriteLine(x[i]);
+    }
+}
+```
+
+
+**✅ Temiz Kod**
+```csharp
+
+public void PrintEvenNumbers(List<int> numbers)
+{
+    foreach (var number in numbers)
+    {
+        if (number % 2 == 0)
+            Console.WriteLine(number);
+    }
+}
+```
+
+
+➡ İsimlendirmeler açık → metodun ne yaptığı ilk bakışta belli.
+
+**Kısaca*
+
+**Clean Code = “Sadece çalışan değil, okunabilir ve sürdürülebilir kod.”**
+
+## Yazılım Mimari Desenleri
+**1) Layered Architecture (Katmanlı Mimari)**
+
+Uygulama katmanlara ayrılır: Presentation, Business, Data Access.
+
+Kod düzenli olur, bakım kolaydır.
+
+Senaryo: Küçük/orta ölçekli projeler, klasik kurumsal uygulamalar.
+
+**2) Clean Architecture**
+
+Katmanlar merkeze doğru gider: Domain (iş kuralları) en içte, dış katmanlar (UI, DB) bağımlıdır.
+
+İş kuralları korunur, teknoloji değişse bile merkez bozulmaz.
+
+Senaryo: Uzun ömürlü, büyük projeler (bankacılık, sağlık sistemleri).
+
+**3) Microservices**
+
+Uygulama küçük bağımsız servislerden oluşur.
+
+Her servis kendi veritabanına sahip olabilir, bağımsız deploy edilir.
+
+Senaryo: Büyük, sürekli büyüyen projeler (e-ticaret siteleri, Netflix, Amazon).
+
+**4) Event-Driven Architecture**
+
+Servisler birbirine “olay” göndererek haberleşir.
+
+**Örn: “Sipariş verildi” olayı → fatura servisi, stok servisi, kargo servisi tetiklenir.*
+
+Senaryo: Gerçek zamanlı, yüksek trafik sistemler (sipariş, ödeme, bildirim sistemleri).
+
+**5) Hexagonal Architecture (Ports & Adapters)**
+
+İş mantığı merkezdedir, giriş/çıkışlar (UI, DB, API) “port/adapter” olarak dışarı bağlanır.
+
+Merkez (domain) dış bağımlılıklardan etkilenmez.
+
+Senaryo: Teknoloji bağımsız kalması gereken projeler (farklı UI veya DB ile çalışabilen sistemler).
+
+### Hangi Senaryoda Hangisi?
+
+| Mimari            | Nerede Kullanılır?                                       |
+|-------------------|----------------------------------------------------------|
+| **Layered**       | Basit ve orta seviye kurumsal uygulamalar                |
+| **Clean Architecture** | Uzun ömürlü, domain odaklı projeler                     |
+| **Microservices** | Büyük ve dağıtık sistemler, ölçeklenmesi gereken projeler |
+| **Event-Driven**  | Gerçek zamanlı, olay bazlı sistemler                     |
+| **Hexagonal**     | Farklı teknolojilere bağımlı kalmaması gereken projeler  |
+
+
+**💡 Kısaca:**
+
+- Küçük projede → Layered
+- Büyük ve uzun ömürlü → Clean Architecture
+- Çok servisli, dev sistem → Microservices
+- Olay bazlı gerçek zamanlı → Event-Driven
+- Esnek, teknoloji bağımsız → Hexagonal
+
+
+
+
+
+
+
+
+
+
+
+
+
