@@ -1818,10 +1818,397 @@ DELETE FROM Students WHERE Name = 'Ayşe';
 
 
 
-
-
-
-
 ## 6. Güvenlik ve Performans
+
+## Authentication vs Authorization
+
+### Authentication (Kimlik Doğrulama)
+
+Kullanıcının kim olduğunu doğrulama işlemidir.
+
+**→ Örn:** Sisteme giriş yaparken kullanıcı adı + şifre kontrolü.
+
+Başarılı olursa sistem “evet, bu kişi gerçekten bu kullanıcı” der.
+
+### Authorization (Yetkilendirme)
+
+Kullanıcının hangi işlemleri yapmaya yetkili olduğunu kontrol eder.
+
+**→Örn:**
+Kullanıcı giriş yaptı → Authentication 
+
+Ama admin sayfasına girmeye çalışıyor → Authorization kontrol eder, yetkisi varsa izin verir.
+
+### Kısaca:
+
+Authentication → “Sen kimsin?” sorusunun cevabı.
+
+Authorization → “Ne yapabilirsin?” sorusunun cevabı.
+
+### Mesela bir şirkete girişte:
+
+Kapıdaki güvenlik kimlik kartına bakıyor → Authentication
+İçeri girdikten sonra sadece yetkili olduğun odalara girebiliyorsun → Authorization
+
+## JWT (JSON Web Token) Nedir, Nasıl Çalışır?
+
+
+###  JWT Nedir?
+JWT, kimlik doğrulama ve yetkilendirme için kullanılan, **JSON formatında güvenli bir token yapısıdır**.  
+
+- Kullanıcı giriş yaptığında (ör. kullanıcı adı + şifre), sistem ona bir **token** üretir.  
+- Bu token daha sonra her istekte beraber gönderilir → böylece kullanıcı tekrar tekrar giriş yapmak zorunda kalmaz.  
+
+
+###  JWT Yapısı
+JWT üç parçadan oluşur (**nokta ile ayrılır**):
+
+xxxxx.yyyyy.zzzzz
+
+
+- **Header (Başlık)** → Algoritma ve token tipi bilgisi (örn: HS256, JWT).  
+- **Payload (Veri kısmı)** → Kullanıcıya ait bilgiler (id, rol, email vb.).  
+- **Signature (İmza)** → Token’ın gerçekten sistem tarafından üretildiğini kanıtlayan şifreli imza.  
+
+
+**Örn:**
+```json
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9 → Header
+eyJ1c2VySWQiOiIxMjMiLCJyb2xlIjoiYWRtaW4ifQ → Payload
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c → Signature
+```
+
+
+###  Nasıl Çalışır?
+1. Kullanıcı giriş yapar → sistem kullanıcı bilgilerini doğrular.  
+2. Doğruysa sistem bir **JWT token** üretir ve kullanıcıya verir.  
+3. Kullanıcı sonraki her istekte bu token’ı **Authorization: Bearer <token>** başlığıyla gönderir.  
+4. Sistem token’ı kontrol eder → geçerliyse isteğe izin verir.  
+
+
+###  Kısaca
+- **JWT = Kimlik kartı gibi dijital bir bilet .**  
+- İçinde kullanıcı bilgileri ve imza vardır.  
+- İmzadan dolayı sahtecilik yapılamaz.  
+- Token süresi bitince yenilenmesi gerekir.
+
+## OAuth, OAuth2.0, OpenID, OpenIddict Nedir? Aralarındaki İlişki
+
+
+### 🔹 OAuth
+- Bir kullanıcı adına başka bir uygulamaya izin verme protokolüdür.  
+- Kullanıcının şifresini paylaşmadan, belirli kaynaklara erişim sağlanır.  
+- **Örn:** “Google hesabımla giriş yap” → başka siteye Google hesabınla erişim izni verirsin ama şifreni paylaşmazsın.  
+
+
+
+### 🔹 OAuth 2.0
+- OAuth’un modern, daha güvenli ve esnek sürümüdür.  
+- **Access Token** mantığı kullanır.  
+- En çok kullanılan sürüm → günümüzde çoğu API ve uygulama OAuth 2.0 destekler.  
+
+
+### 🔹 OpenID
+- **Kimlik doğrulama (authentication)** için standarttır.  
+- “Bu kişi gerçekten kim?” sorusuna cevap verir.  
+- **Örn:** Google, Facebook veya Microsoft hesabınla başka sitelere giriş yapmak.  
+
+
+### 🔹 OpenIddict
+- **.NET ekosisteminde** kullanılan kütüphane.  
+- OAuth 2.0 ve OpenID Connect protokollerini kolayca uygulamak için kullanılır.  
+- Yani “OAuth & OpenID’yi .NET uygulamana entegre etmek” için hazır çözümdür.  
+
+
+### Aralarındaki İlişki
+- **OAuth** → Yetkilendirme standardı (izin verme).  
+- **OAuth 2.0** → OAuth’un güncel ve en çok kullanılan sürümü.  
+- **OpenID** → Kimlik doğrulama standardı.  
+- **OpenIddict** → .NET için bu standartları kolayca uygulamayı sağlayan araç.  
+
+
+####  Kısaca
+- **OAuth** = İzin verme (**authorization**)  
+- **OpenID** = Kimlik doğrulama (**authentication**)  
+- **OAuth 2.0** = OAuth’un en gelişmiş hali  
+- **OpenIddict** = Bunları .NET projelerinde kolayca kullanmamızı sağlayan kütüphane
+
+## OAuth, OAuth2.0, OpenID, OpenIddict Karşılaştırma Tablosu
+
+| Kavram      | Ne İşe Yarar?                                                                 | Örnek Kullanım                                                                 |
+|-------------|-------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| **OAuth**   | Kullanıcı şifresini vermeden başka bir uygulamaya belirli izinler verir (**yetkilendirme**). | “Google hesabımla giriş yap” dediğinde başka siteye erişim izni verirsin ama şifreni paylaşmazsın. |
+| **OAuth 2.0** | OAuth’un modern ve en yaygın kullanılan sürümü, **Access Token** mantığıyla çalışır. | Çoğu API’nin kullandığı sistem (Google, Facebook, GitHub API). |
+| **OpenID**  | **Kimlik doğrulama standardı** → “Bu kişi gerçekten kim?” sorusunu çözer.      | Google hesabınla bir foruma giriş yapmak.                                       |
+| **OpenIddict** | .NET uygulamalarında OAuth 2.0 ve OpenID Connect’i kolayca kullanmamızı sağlayan kütüphane. | ASP.NET Core projesine giriş & yetkilendirme sistemi kurarken. |
+
+
+
+###  Kısaca:
+- **OAuth** → Yetkilendirme  
+- **OAuth 2.0** → OAuth’un gelişmiş versiyonu  
+- **OpenID** → Kimlik doğrulama  
+- **OpenIddict** → Bunları .NET projelerinde kolayca uygulamayı sağlayan kütüphane  
+
+
+## Performans Artırımı İçin Neler Yapabilirim?
+
+**1) AsNoTracking** – Okuma sorgularında takip kapatma
+
+Sadece listeleme/rapor yapıyorsam değişiklik izlemeye gerek yok. EF’nin tracking’i kapatılınca bellek ve CPU azalıyor.
+
+```csharp
+var products = await _db.Products
+    .AsNoTracking()
+    .Where(p => p.IsActive)
+    .ToListAsync();
+```
+Ne zaman?
+- Sık okunan ama güncellenmeyen verilerde.
+
+**2) IAsyncEnumerable<T>** – Stream ederek satır satır işleme
+
+Büyük listeleri tek seferde RAM’e yığmak yerine akış halinde işliyorum.
+
+```csharp
+await foreach (var p in _db.Products
+    .AsNoTracking()
+    .AsAsyncEnumerable())
+{
+    // her kayıt geldikçe işle
+    Process(p);
+}
+```
+Ne zaman?
+- Çok büyük dataset’lerde, arka plan işlemlerinde.
+
+**3) Caching** – Sık erişilen veriyi bellekte/dağıtıkta tutma
+
+Okuma ağırlıklı verilerde cache ciddi hız kazandırıyor.
+
+**a) IMemoryCache (tek sunucu):*
+
+```csharp
+public class CategoryService(IMemoryCache cache, AppDbContext db)
+{
+    public async Task<List<Category>> GetCategoriesAsync()
+    {
+        return await cache.GetOrCreateAsync("cats", async e =>
+        {
+            e.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10);
+            return await db.Categories.AsNoTracking().ToListAsync();
+        });
+    }
+}
+```
+**b) Redis (çoklu sunucu/scale-out):*
+
+StackExchange.Redis ile IDistributedCache kullanırım.
+
+```csharp
+builder.Services.AddStackExchangeRedisCache(o =>
+    o.Configuration = "localhost:6379");
+```
+
+Ne zaman?
+- Değişimi seyrek, okunması sık olan veriler (sözlükler, ayarlar, menüler, kampanyalar).
+
+
+**4) Profiling & İzleme** – Nerede yavaşlıyorum?
+
+MiniProfiler veya EF Core logları ile yavaş sorguları görüyorum:
+
+- N+1 sorgu var mı?
+- Gereksiz Include var mı?
+- Index eksik mi?
+
+MiniProfiler kurulumu kısaca:
+
+```csharp
+builder.Services.AddMiniProfiler().AddEntityFramework();
+app.UseMiniProfiler();
+```
+Tarayıcıda mini çubuk çıkar, sorgu sürelerini gösterir.
+
+**5) Redis** – Dağıtık cache + message queue senaryoları
+
+Sadece cache değil; rate limiting, background job koordinasyonu, pub/sub için de işime yarıyor.
+
+Avantaj: Çok hızlı, hafif, kolay yatay ölçek.
+
+Not: TTL (süre sonu) ve invalidation stratejisi belirlemek önemli.
+
+
+### Bonus Küçük İpuçları (sık uyguladıklarım)
+
+**Projeksiyon yap:** Select ile sadece gereken kolonları çek.
+```csharp
+var dto = await _db.Products
+    .AsNoTracking()
+    .Select(p => new ProductDto { Id = p.Id, Name = p.Name })
+    .ToListAsync();
+```
+
+- Sayfalama (pagination): Skip/Take kullan, dev listeyi tek seferde çekme.
+
+- Include’ları ölç: Gereksiz Include performansı düşürür.
+
+- Asenkron kullan: ToListAsync, FirstOrDefaultAsync vb.
+
+- Veri tabanı index’i: Sık sorgulanan alanlarda doğru index büyük fark yaratır.
+
+**Kısaca**
+- AsNoTracking → Okuma sorgularını hızlandırır.
+
+- IAsyncEnumerable → Büyük veriyi akış halinde işler.
+
+- Caching (IMemoryCache/Redis) → DB yükünü azaltır, hızlı yanıt verir.
+
+- Profiling (MiniProfiler/EF logs) → Yavaş noktayı bulup hedefe atış yaparsın.
+
+- Redis → Dağıtık cache + ölçeklenebilirlik.
+
+## OWASP Top 10 – Web Uygulamalarında En Yaygın Güvenlik Açıkları
+
+OWASP (Open Web Application Security Project), her birkaç yılda bir en yaygın web güvenlik açıklarını listeler. Bunlar geliştiricilerin özellikle dikkat etmesi gereken temel tehditlerdir.
+
+### 1️⃣ Broken Access Control (Yetki Kontrollerinin Bozulması)
+Kullanıcıya ait olmayan verilere erişim sağlanabilmesi.  
+**Örn:** Normal bir kullanıcı admin sayfasına girebiliyorsa.
+
+### 2️⃣ Cryptographic Failures (Şifreleme Hataları)
+Verilerin şifrelenmeden saklanması veya zayıf algoritmalar kullanılması.  
+**Örn:** Parolaların düz metin olarak tutulması.
+
+
+### 3️⃣ Injection (Enjeksiyon)
+Kullanıcıdan alınan verilerin kontrol edilmeden çalıştırılması.  
+**Örn:** SQL Injection → `' OR '1'='1` gibi sorguları sisteme enjekte etmek.
+
+
+### 4️⃣ Insecure Design (Güvensiz Tasarım)
+Uygulamanın baştan güvenlik düşünülmeden tasarlanması.  
+**Örn:** Parolasız kritik işlemlere izin verilmesi.
+
+
+### 5️⃣ Security Misconfiguration (Güvenlik Yanlış Yapılandırması)
+Gereksiz servislerin açık bırakılması, default şifrelerin değiştirilmemesi.  
+**Örn:** “admin/admin” ile giriş yapılabilmesi.
+
+
+### 6️⃣ Vulnerable and Outdated Components (Güncel Olmayan Kütüphaneler)
+Eski framework, kütüphane veya eklenti kullanılması.  
+**Örn:** Güvenlik açığı bilinen eski bir jQuery sürümü.
+
+
+### 7️⃣ Identification and Authentication Failures (Kimlik Doğrulama Hataları)
+Login süreçlerinde hatalı veya zayıf kontroller.  
+**Örn:** Brute force saldırılarına karşı koruma olmaması.
+
+
+### 8️⃣ Software and Data Integrity Failures (Veri ve Yazılım Bütünlüğü Hataları)
+Güncellemelerin doğrulanmadan yüklenmesi.  
+**Örn:** Kaynağı belirsiz bir paket yüklemek.
+
+
+### 9️⃣ Security Logging and Monitoring Failures (Loglama ve İzleme Eksikliği)
+Güvenlik olaylarının kayıt altına alınmaması.  
+**Örn:** Şüpheli giriş denemelerinin loglanmaması.
+
+
+### 🔟 Server-Side Request Forgery (SSRF)
+Sunucunun başka sistemlere istenmeyen istekler göndermesi.  
+**Örn:** Kullanıcıdan alınan bir URL ile sunucunun iç ağa istek göndermesi.
+
+
+
+#### 💡 Kısaca:
+OWASP Top 10, web uygulamalarında en sık görülen 10 temel güvenlik açığını özetler.  
+Bunları bilmek = Daha güvenli yazılım geliştirmek için ilk adımdır.  
+
+
+## Yaygın Güvenlik Açıkları
+
+
+
+### 🔹 SQL Injection
+Kullanıcıdan gelen verilerin filtrelenmeden SQL sorgusuna eklenmesiyle oluşur.  
+**Örn:** Giriş formuna `" OR '1'='1"` yazıldığında tüm kullanıcılar listelenebilir.  
+
+
+
+### 🔹 XSS (Cross-Site Scripting)
+Kullanıcının tarayıcısında kötü niyetli JavaScript kodu çalıştırılması.  
+**Örn:** Yorum alanına `<script>alert("hack!")</script>` yazılması.  
+
+
+### 🔹 CSRF (Cross-Site Request Forgery)
+Kullanıcı farkında olmadan kendi oturumu üzerinden istek gönderir.  
+**Örn:** Banka sitesinde giriş yapmışken sahte bir linke tıklayıp para transferi yapılması.  
+
+
+### 🔹 Broken Authentication (Zayıf Kimlik Doğrulama)
+Kimlik doğrulama sürecinin yanlış veya eksik uygulanması.  
+**Örn:** Şifrelere limit koymamak, brute-force saldırısıyla kolayca giriş yapılabilmesi.  
+
+
+#### 💡 Kısaca:
+- **SQL Injection** → Veritabanını kandırma  
+- **XSS** → Kullanıcı tarayıcısına kötü kod sızdırma  
+- **CSRF** → Kullanıcı oturumunu kötüye kullanma  
+- **Broken Auth** → Hatalı/zayıf giriş mekanizması  
+
+## ASP.NET Core ile Güvenlik Önlemleri
+
+Web uygulamalarında OWASP açıklarına karşı alabileceğimiz bazı basit ama etkili önlemler:
+
+
+### 🔹 SQL Injection’a karşı
+- Parametreli sorgular kullan (EF Core zaten bunu yapar).  
+- `FromSqlInterpolated` gibi güvenli metotları tercih et.  
+
+**Örnek:**
+```csharp
+var student = _db.Students
+    .FromSqlInterpolated($"SELECT * FROM Students WHERE Name = {name}")
+    .FirstOrDefault();
+```
+### 🔹 XSS (Cross-Site Scripting)’e karşı
+
+- Kullanıcıdan gelen verileri sanitize et (temizle).
+- Razor otomatik @Html.Encode yapar ama Html.Raw() gibi metotlardan kaçın.
+- Content Security Policy (CSP) ekle.
+
+### 🔹 CSRF (Cross-Site Request Forgery)’e karşı
+
+- ASP.NET Core’da @Html.AntiForgeryToken() kullan.
+- Controller tarafında [ValidateAntiForgeryToken] attribute ekle.
+
+Örnek:
+```csharp
+[HttpPost]
+[ValidateAntiForgeryToken]
+public IActionResult SendMoney(MoneyTransferModel model) { ... }
+```
+### 🔹 Broken Authentication’a karşı
+
+- Identity veya JWT ile güçlü bir kimlik doğrulama mekanizması kullan.
+- Parolalara güçlü kurallar koy (min uzunluk, karmaşık karakterler).
+- Brute-force saldırılarını engellemek için lockout veya rate limiting ekle.
+
+💡 Kısaca:
+
+- Model Validation → Yanlış/veri dışı girişleri engeller.
+- Input Sanitization → Zararlı script’leri temizler.
+- Anti-Forgery Token → CSRF saldırılarını engeller.
+- Strong Auth & JWT → Kimlik doğrulamayı sağlamlaştırır.
+
+
+
+
+
+
+
+
 ## 7. Logging ve Hata Yönetimi
 ## 8. Yazılım Geliştirme Prensipleri
